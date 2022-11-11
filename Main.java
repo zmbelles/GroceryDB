@@ -5,19 +5,19 @@ import java.util.Vector;
 public class Main {
 	public static void addLegacyData(Statement stmt) throws SQLException {
 		Vector<String> stmts = new Vector<>();
-		String addEmpdata = "insert into employee"
-				+ "values(1, 'Gertrude', 'Bennings',   2, 27000, '1949-05-11',  111223333,  6,  4),"
-				+ "(2,  'Jim',          'Johnson',     2, 28500, '2012-01-01',  867530900,  7,  4),"
-				+ "(3,  'Dairyl',       'Roquline',    1, 280000, '1949-05-11', 222334444,  7,  4),"
-				+ "(4,  'Damerious',    'Traxoritrix', 2, 17000, '1999-04-22',  643254784,  9,  4),"
-				+ "(5,  'Hellen',       'Hammond',     3,  4500, '1944-09-09',  567262111, 10,  7),"
-				+ "(6,  'Jerry',        'Atrick',      1, 75000, '1987-07-19',  532831357, 11,  3),"
-				+ "(7,  'Michael',      'Schumacher',  3, 42000, '1969-01-03',  320945800, 12,  7),"
-				+ "(8,  'Pierre',       'Gasly',       4, 32000, '1983-07-23',  732748963, 13,  8),"
-				+ "(9,  'Krombopulous', 'Michael',     4, 32000, '1983-07-23',  320945800, 14,  8),"
-				+ "(10, 'Xi',           'Jinping',     5, 18000, '1953-06-15',  118259483, 15, 10)"; 
+		String addEmpdata = "insert into employee "
+				+ "values (1,  'Gertrude',     'Bennings',   2, 27000.00, '1949-05-11',  111223333,  6,  4),"
+					  + "(2,  'Jim',          'Johnson',     2, 28500.00, '2012-01-01',  867530900,  7,  4),"
+					  + "(3,  'Dairyl',       'Roquline',    1, 280000.00, '1949-05-11', 222334444,  7,  4),"
+					  + "(4,  'Damerious',    'Traxoritrix', 2, 17000.00, '1999-04-22',  643254784,  9,  4),"
+				      + "(5,  'Hellen',       'Hammond',     3,  4500.00, '1944-09-09',  567262111, 10,  7),"
+					  + "(6,  'Jerry',        'Atrick',      1, 75000.00, '1987-07-19',  532831357, 11,  3),"
+					  + "(7,  'Michael',      'Schumacher',  3, 42000.00, '1969-01-03',  320945800, 12,  7),"
+					  + "(8,  'Pierre',       'Gasly',       4, 32000.00, '1983-07-23',  732748963, 13,  8),"
+					  + "(9,  'Krombopulous', 'Michael',     4, 32000.00, '1983-07-23',  320945800, 14,  8),"
+					  + "(10, 'Xi',           'Jinping',     5, 18000.00, '1953-06-15',  118259483, 15, 10)"; 
 		stmts.add(addEmpdata);
-		String addInvData = "insert into inventory"
+		String addInvData = "insert into inventory "
 				+ "values('Tomatoes',               1, 2, 4.49,   11),"
 					  + "('Potatoes',               2, 2, 2.69,   24),"
 					  + "('2% Milk',                3, 4, 3.99,    8),"
@@ -30,7 +30,7 @@ public class Main {
 					  + "('Pork Tenderloin',       10, 3, 34.99,   6),"
 					  + "'Yogurt',                 11, 4, 4.99,   16)";
 		stmts.add(addInvData);
-		String addDeptData = "insert into department"
+		String addDeptData = "insert into department "
 				+ "values(1, 'Deli',       3, 1111, 2),"
 					   + "2, 'Produce',    4, 2222, 3),"
 					   + "3, 'Butcher',    7, 3333, 2),"
@@ -49,11 +49,13 @@ public class Main {
 				+ "(EID int(11) primary key not null,"
 				+ "FName varchar(45) not null,"
 				+ "LName varchar(45) not null,"
-				+ "Salary decimal(6,2) not null, "
+				+ "Department_DID int(11) not null,"
+				+ "Salary decimal(6,2) not null,"
 				+ "DOB date not null,"
 				+ "SSN int not null,"
 				+ "S_EID int(11) not null,"
-				+ "foreign key(S_EID) REFERENCES employee(EID))";
+				+ "foreign key(S_EID) REFERENCES employee(EID),"
+				+ "foreign key(Department_DID) REFERENCES department(DID))";
 		allStmts.add(sql);
 		String sq2 = "create table members"
 				+ "(MID int(11) primary key not null,"
@@ -112,23 +114,23 @@ public class Main {
     	Connection conn;
     	boolean permission = false;
     	while(!permission) {
-    		System.out.print("Please enter your password");
+    		System.out.println("Please enter your password");
     		String pass = k.next();
 			try {
 				conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", pass);
 				permission = true;
 				Statement stmt = conn.createStatement();
 				
-				System.out.println("Have you created the tables yet? (Y or N");
-				String in = k.next();
-				if(in=="N" || in=="n") {
+				System.out.println("Have you created the tables yet? (Y or N)");
+				char in = k.next().charAt(0);
+				if(in=='N' || in=='n') {
 					System.out.println("Adding tables.");
 					tableCreation(stmt);
 				}
 				
 				System.out.println("Have you added the legacy data yet? (Y or N)");
-				in = k.next();
-				if(in=="N" || in=="n") {
+				in = k.next().charAt(0);
+				if(in=='N' || in=='n') {
 					System.out.println("Adding legacy data.");
 					addLegacyData(stmt);
 				}

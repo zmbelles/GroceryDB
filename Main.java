@@ -3,6 +3,67 @@ import java.util.Scanner;
 import java.util.Vector;
 
 public class Main {
+
+	public static void tableCreation(Statement stmt) throws SQLException {
+		Vector<String> allStmts = new Vector<>();
+		String sql = "create table employee "
+				+ "(EID int(11) primary key not null,"
+				+ "FName varchar(45) not null,"
+				+ "LName varchar(45) not null,"
+				+ "Department_DID int(11) not null,"
+				+ "Salary decimal(6,2) not null,"
+				+ "DOB date not null,"
+				+ "SSN int not null,"
+				+ "S_EID int(11) not null,"
+				+ "foreign key(S_EID) REFERENCES employee(EID),"
+				+ "foreign key(Department_DID) REFERENCES department(DID))";
+		allStmts.add(sql);
+		String sq2 = "create table members "
+				+ "(MID int(11) primary key not null,"
+				+ "DOB date not null,"
+				+ "Opt_in boolean not null,"
+				+ "Email varchar(45) not null,"
+				+ "Employee_EID int(11) not null,"
+				+ "foreign key(Employee_EID) REFERENCES employee(EID))";
+		allStmts.add(sq2);
+		String sq3 = "create table department "
+				+ "(DID int(11) primary key not null,"
+				+ "DName varchar(45) not null,"
+				+ "Extension int not null,"
+				+ "Num_of_emps int not null,"
+				+ "Mgr_S_EID int not null,"
+				+ "foreign key(Mgr_S_EID) REFERENCES employee(EID))";
+		allStmts.add(sq3);
+		String sq4 = "create table inventory "
+				+ "(PID int(11) primary key not null,"
+				+ "Price decimal(4,2) not null,"
+				+ "QTY int not null,"
+				+ "Department_DID int not null,"
+				+ "foreign key(Department_DID) REFERENCES department(DID))";
+		allStmts.add(sq4);
+		String sq5 = "create table discount "
+				+ "(Sale_price decimal(4,2) not null,"
+				+ "Start_date date not null,"
+				+ "end_date date not null,"
+				+ "Is_Members_Only boolean not null,"
+				+ "New_price decimal(4,2),"
+				+ "Inventory_PID int not null,"
+				+ "foreign key(Inventory_PID) REFERENCES inventory(PID))";
+		allStmts.add(sq5);
+		String sq6 = "create table shipment_status "
+				+ "(Qty_on_order int not null,"
+				+ "Qty_in_transit int not null,"
+				+ "arrival_date date not null,"
+				+ "Inventory_PID int not null,"
+				+ "foreign key(Inventory_PID) REFERENCES inventory(PID))";
+		allStmts.add(sq6);
+		while(!allStmts.isEmpty()) {
+			stmt.execute(allStmts.firstElement());
+			allStmts.remove(0);
+		}
+	}
+    
+/*###############################ADDING DATA ALREADY IN SYSTEM###########################################*/	
 	public static void addLegacyData(Statement stmt) throws SQLException {
 		Vector<String> stmts = new Vector<>();
 		String addEmpdata = "insert into employee "
@@ -43,72 +104,30 @@ public class Main {
 		}
 	}
 	
-	public static void tableCreation(Statement stmt) throws SQLException {
-		Vector<String> allStmts = new Vector<>();
-		String sql = "create table employee"
-				+ "(EID int(11) primary key not null,"
-				+ "FName varchar(45) not null,"
-				+ "LName varchar(45) not null,"
-				+ "Department_DID int(11) not null,"
-				+ "Salary decimal(6,2) not null,"
-				+ "DOB date not null,"
-				+ "SSN int not null,"
-				+ "S_EID int(11) not null,"
-				+ "foreign key(S_EID) REFERENCES employee(EID),"
-				+ "foreign key(Department_DID) REFERENCES department(DID))";
-		allStmts.add(sql);
-		String sq2 = "create table members"
-				+ "(MID int(11) primary key not null,"
-				+ "DOB date not null,"
-				+ "Opt_in boolean not null,"
-				+ "Email varchar(45) not null,"
-				+ "Employee_EID int(11) not null,"
-				+ "foreign key(Employee_EID) REFERENCES employee(EID))";
-		allStmts.add(sq2);
-		String sq3 = "create table department"
-				+ "(DID int(11) primary key not null,"
-				+ "DName varchar(45) not null,"
-				+ "Extension int not null,"
-				+ "Num_of_emps int not null,"
-				+ "Mgr_S_EID int not null,"
-				+ "foreign key(Mgr_S_EID) REFERENCES employee(EID))";
-		allStmts.add(sq3);
-		String sq4 = "create table inventory"
-				+ "(PID int(11) primary key not null,"
-				+ "Price decimal(4,2) not null,"
-				+ "QTY int not null,"
-				+ "Department_DID int not null,"
-				+ "foreign key(Department_DID) REFERENCES department(DID))";
-		allStmts.add(sq4);
-		String sq5 = "create table discount"
-				+ "(Sale_price decimal(4,2) not null,"
-				+ "Start_date date not null,"
-				+ "end_date date not null,"
-				+ "Is_Members_Only boolean not null,"
-				+ "New_price decimal(4,2),"
-				+ "Inventory_PID int not null,"
-				+ "foreign key(Inventory_PID) REFERENCES inventory(PID))";
-		allStmts.add(sq5);
-		String sq6 = "create table shipment_status"
-				+ "(Qty_on_order int not null,"
-				+ "Qty_in_transit int not null,"
-				+ "arrival_date date not null,"
-				+ "Inventory_PID int not null,"
-				+ "foreign key(Inventory_PID) REFERENCES inventory(PID))";
-		allStmts.add(sq6);
-		while(!allStmts.isEmpty()) {
-			stmt.execute(allStmts.firstElement());
-			allStmts.remove(0);
+	/*###############################SQL QUERIES OF EACH GROUP MEMBER###########################################*/
+	public static boolean performQueries(Statement stmt, int qNum) throws SQLException {
+		boolean ran = true;
+		if(qNum == 1) {
+			//TODO: DAN'S QUERIES
 		}
+		else if(qNum == 2) {
+			//TODO: ZACH'S QUERIES
+		}
+		else if(qNum == 3) {
+			//TODO: TONY'S QUERIES
+		}
+		else {
+			ran = false;
+		}
+		return ran;
 	}
-    
-	public static void performQueries(Statement stmt) throws SQLException {
-		//TODO: write and implement SQL Queries
+/*##########################################ADDING NEW DATA TO TABLES######################################*/
+	public static boolean addData(Statement stmt, String table) throws SQLException {
+		
+		return false;
 	}
 	
-	public static void addData(Statement stmt) throws SQLException {
-		
-	}
+/*#######################################MAIN METHOD########################################################*/
 	public static void main(String[] args) {
     	Scanner k = new Scanner(System.in);
     	Connection conn;
@@ -141,12 +160,67 @@ public class Main {
 				System.out.println("3. Exit");
 				int choice = k.nextInt();
 				if(choice==1) {
-					performQueries(stmt);
+					boolean error = false;
+					boolean finished = false;
+					do {
+						System.out.println("Which query would you like to run?");
+						System.out.println("1. Dan Acosta's queries");
+						System.out.println("2. Zach Belles's queries");
+						System.out.println("3. Tony Le's queries");
+						int queryNum = k.nextInt();
+						error = performQueries(stmt, queryNum);
+						if(error) {
+							System.out.println("Something went wrong, please try again");
+						}
+						else {
+							System.out.println("Would you like to run any more queries? (Y or N)");
+							in = k.next().charAt(0);
+							if(in=='N' || in=='n') {
+								finished = true;
+							}
+						}
+					} while(error || !finished);
 				}
 				else if(choice == 2) {
-					
+					boolean finished = false;
+					boolean error = false;
+					do {
+						System.out.println("Which table would you like to add data to?");
+						System.out.println("=========================================");
+						System.out.println("1. Departments");
+						System.out.println("2. Discouts");
+						System.out.println("3. Employee");
+						System.out.println("4. Inventory");
+						System.out.println("5. Members");
+						System.out.println("6. Shipment Status");
+						System.out.println("7. Exit");
+						int qNum = k.nextInt();
+						switch(qNum) {
+						case 1:
+							error = addData(stmt, "Dep");
+							break;
+						case 2:
+							error = addData(stmt, "Dis");
+							break;
+						case 3:
+							error = addData(stmt, "Emp");
+							break;
+						case 4:
+							error = addData(stmt, "Inv");
+							break;
+						case 5:
+							error = addData(stmt, "Mem");
+							break;
+						case 6:
+							error = addData(stmt, "Shp");
+							break;
+						case 7:
+							finished = true;
+						default:
+							System.out.println("invalid choice");
+						}
+					}while(error || !finished);
 				}
-				
 			}
 			catch(Exception e) {
 				System.out.println("Error: " + e);

@@ -1,11 +1,12 @@
 import java.sql.*;
 import java.util.Scanner;
+import java.util.Stack;
 import java.util.Vector;
 
 public class Main {
 
 	public static void tableCreation(Statement stmt) throws SQLException {
-		Vector<String> allStmts = new Vector<>();
+		Stack<String> stack = new Stack<String>();
 		String sql = "create table employee "
 				+ "(EID int(11) primary key not null,"
 				+ "FName varchar(45) not null,"
@@ -17,7 +18,7 @@ public class Main {
 				+ "S_EID int(11) not null,"
 				+ "foreign key(S_EID) REFERENCES employee(EID),"
 				+ "foreign key(Department_DID) REFERENCES department(DID))";
-		allStmts.add(sql);
+		stack.push(sql);
 		String sq2 = "create table members "
 				+ "(MID int(11) primary key not null,"
 				+ "DOB date not null,"
@@ -25,7 +26,7 @@ public class Main {
 				+ "Email varchar(45) not null,"
 				+ "Employee_EID int(11) not null,"
 				+ "foreign key(Employee_EID) REFERENCES employee(EID))";
-		allStmts.add(sq2);
+		stack.push(sq2);
 		String sq3 = "create table department "
 				+ "(DID int(11) primary key not null,"
 				+ "DName varchar(45) not null,"
@@ -33,14 +34,14 @@ public class Main {
 				+ "Num_of_emps int not null,"
 				+ "Mgr_S_EID int not null,"
 				+ "foreign key(Mgr_S_EID) REFERENCES employee(EID))";
-		allStmts.add(sq3);
+		stack.push(sq3);
 		String sq4 = "create table inventory "
 				+ "(PID int(11) primary key not null,"
 				+ "Price decimal(4,2) not null,"
 				+ "QTY int not null,"
 				+ "Department_DID int not null,"
 				+ "foreign key(Department_DID) REFERENCES department(DID))";
-		allStmts.add(sq4);
+		stack.push(sq4);
 		String sq5 = "create table discount "
 				+ "(Sale_price decimal(4,2) not null,"
 				+ "Start_date date not null,"
@@ -49,23 +50,22 @@ public class Main {
 				+ "New_price decimal(4,2),"
 				+ "Inventory_PID int not null,"
 				+ "foreign key(Inventory_PID) REFERENCES inventory(PID))";
-		allStmts.add(sq5);
+		stack.push(sq5);
 		String sq6 = "create table shipment_status "
 				+ "(Qty_on_order int not null,"
 				+ "Qty_in_transit int not null,"
 				+ "arrival_date date not null,"
 				+ "Inventory_PID int not null,"
 				+ "foreign key(Inventory_PID) REFERENCES inventory(PID))";
-		allStmts.add(sq6);
-		while(!allStmts.isEmpty()) {
-			stmt.execute(allStmts.firstElement());
-			allStmts.remove(0);
+		stack.push(sq6);
+		while(!stack.empty()) {
+			stmt.execute(stack.pop());
 		}
 	}
     
 /*###############################ADDING DATA ALREADY IN SYSTEM###########################################*/	
 	public static void addLegacyData(Statement stmt) throws SQLException {
-		Vector<String> stmts = new Vector<>();
+		Stack<String> stack = new Stack<String>();
 		String addEmpdata = "insert into employee "
 				+ "values (1,  'Gertrude',     'Bennings',   2, 27000.00, '1949-05-11',  111223333,  6,  4),"
 					  + "(2,  'Jim',          'Johnson',     2, 28500.00, '2012-01-01',  867530900,  7,  4),"
@@ -77,7 +77,8 @@ public class Main {
 					  + "(8,  'Pierre',       'Gasly',       4, 32000.00, '1983-07-23',  732748963, 13,  8),"
 					  + "(9,  'Krombopulous', 'Michael',     4, 32000.00, '1983-07-23',  320945800, 14,  8),"
 					  + "(10, 'Xi',           'Jinping',     5, 18000.00, '1953-06-15',  118259483, 15, 10)"; 
-		stmts.add(addEmpdata);
+		stack.push(addEmpdata);
+		
 		String addInvData = "insert into inventory "
 				+ "values('Tomatoes',               1, 2, 4.49,   11),"
 					  + "('Potatoes',               2, 2, 2.69,   24),"
@@ -90,17 +91,55 @@ public class Main {
 					  + "('Gouda Cheese'            9, 1, 12.99,  18),"
 					  + "('Pork Tenderloin',       10, 3, 34.99,   6),"
 					  + "'Yogurt',                 11, 4, 4.99,   16)";
-		stmts.add(addInvData);
+		stack.push(addInvData);
+		
 		String addDeptData = "insert into department "
 				+ "values(1, 'Deli',       3, 1111, 2),"
 					   + "2, 'Produce',    4, 2222, 3),"
 					   + "3, 'Butcher',    7, 3333, 2),"
 					   + "4, 'Dairy',      8, 4444, 2),"
 					   + "5, 'Logistics', 10, 5555, 1)";
-		stmts.add(addDeptData);
-		while(!stmts.isEmpty()) {
-			stmt.execute(stmts.firstElement());
-			stmts.remove(0);
+		stack.push(addDeptData);
+		String addInvStatusData = "INSERT INTO inventory_status"
+                + " VALUES ('1', '30', '15', '2022-12-26'),"
+                + "('2', '50', '50', '2022-12-26'),"
+                + "('3', '24', '60', '2023-01-07'),"
+                + "('4', '16', '45', '2023-01-07'),"
+                + "('5', '100', '190', '2023-01-14'),"
+                + "('6', '1', '1', '2023-01-14'),"
+                + "('7', '154', '200', '2023-01-14'),"
+                + "('8', 'NULL', 'NULL', 'NULL'),"
+                + "('9', 'NULL', 'NULL', 'NULL'),"
+                + "('10', '45', '36', '2023-01-21'),"
+                + "('11', '21', '45', '2023-01-21')";
+		stack.push(addInvStatusData);
+		
+		String addRewardMemData = "INSERT INTO rewardsmembers"
+	            + " VALUES ('1', 'Dave', 'Smith', '1957-12-14', 'Y', 'genericemail@gmail.com'),"
+	            + "('2', 'Chase', 'McDoogle', '1980-08-15', 'N', 'coolranch@gmail.com'),"
+	            + "('3', 'Ira', 'Stevenson', '1892-01-20', 'Y', 'imold@gmail.com'),"
+	            + "('4', 'Jake', 'Cheese', '2022-03-22', 'Y', 'googoogaga@gmail.com'),"
+	            + "('5', 'Phil', 'Knightly', '1996-12-16', 'N', 'doritoslayer@gmail.com'),"
+	            + "('6', 'Gertrude', 'Bennings', '1944-08-22', 'Y', 'gbennings@gmail.com'),"
+	            + "('7', 'Jim', 'Johnson', '1949-05-11', 'Y', 'jjohnson@gmail.com'),"
+	            + "('8', 'Dairyl', 'Roquline', '2012-01-01', 'N', 'drose@msn.com'),"
+	            + "('9', 'Damerious', 'Taxoritrix', '1999-04-22', 'Y', 'dtrax@msn.com'),"
+	            + "('10', 'Hellen', 'Hammond', '1944-09-09', 'Y', 'hammy222@gmail.com'),"
+	            + "('11', 'Jerry', 'Atrick', '1987-07-19', 'N', 'prunejuice@gmail.com'),"
+	            + "('12', 'Michael', 'Schumacher', '1969-01-03', 'Y', 'mikeshou@msn.com'),"
+	            + "('13', 'Pierre', 'Gasly', '1983-07-23', 'Y', 'pgassy@gmail.com'),"
+	            + "('14', 'Krombopulous', 'Michael', '1996-11-16', 'N', 'krombo@msn.com'),"
+	            + "('15', 'Xi', 'Jinping', '1953-06-15', 'Y', 'chinarules@msn.com)";
+	    stack.push(addRewardMemData);
+	    
+        String addDiscountsData = "INSERT INTO discounts "
+                + " VALUES ('2.50', '2022-11-08', '2022-11-15', '1', '4.49', 'Y'),"
+                + "('4.99', '2022-12-09', '2022-12-24', '5', '8.99', 'Y'),"
+                + "('1.00', '2022-12-09', '2022-12-25', '7', '1115.12', 'N')";
+        stack.push(addDiscountsData);
+        
+		while(!stack.empty()) {
+			stmt.execute(stack.pop());
 		}
 	}
 	
@@ -124,6 +163,24 @@ public class Main {
 /*##########################################ADDING NEW DATA TO TABLES######################################*/
 	public static boolean addData(Statement stmt, String table) throws SQLException {
 		
+		if(table == "dep") {
+			
+		}
+		else if(table=="dis") {
+			
+		}
+		else if(table=="emp") {
+			
+		}
+		else if(table=="inv") {
+			
+		}
+		else if(table=="mem") {
+			
+		}
+		else if(table=="shp") {
+			
+		}
 		return false;
 	}
 	

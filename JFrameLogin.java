@@ -16,7 +16,6 @@ import javax.swing.JTextPane;
 import javax.swing.JButton;
 
 public class JFrameLogin extends JFrame implements ActionListener{
-
 	private JPanel contentPane;
 	private JTextField txtUsername;
 	private JTextField txtPassword;
@@ -24,6 +23,7 @@ public class JFrameLogin extends JFrame implements ActionListener{
 	JLabel lblAcostasBarginMart;
 	JTextPane userPane;
 	JButton btnSubmit;
+	static JFrameLogin frame;
 
 	/**
 	 * Launch the application.
@@ -32,7 +32,7 @@ public class JFrameLogin extends JFrame implements ActionListener{
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					JFrameLogin frame = new JFrameLogin();
+					frame = new JFrameLogin();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -81,17 +81,36 @@ public class JFrameLogin extends JFrame implements ActionListener{
 		
 		btnSubmit = new JButton("Submit");
 		btnSubmit.setBounds(168, 135, 117, 25);
-		btnSubmit.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String user = userPane.getText();
-				int pass = passwordField.getText().hashCode();
-				if(user=="Admin" && pass=="Password".hashCode()) {
-					
-				}
-			}
-		});
+		btnSubmit.addActionListener(new ActionListener()
+		{
+			  public void actionPerformed(ActionEvent e)
+			  {
+				  String user1 = "Admin";
+				  String pass1 = "Password";
+				  String user = userPane.getText();
+				  //bad code
+				  String pass = new String(passwordField.getPassword());
+				  boolean tmp = user.contentEquals(user1);
+				  boolean tmp2 = pass.contentEquals(pass1);
+				  if(user.contentEquals(user1) && pass.contentEquals("Password")) {
+					  frame.setVisible(false);
+					  JFrameHome jfh = new JFrameHome();
+					  jfh.setVisible(true);
+					  
+				  }
+			  }
+			});
 		
 		contentPane.add(btnSubmit);
+		
+		JLabel wrongPassLbl = new JLabel("ERROR: Wrong Password");
+		wrongPassLbl.setBounds(161, 171, 135, 14);
+		wrongPassLbl.setVisible(false);
+		contentPane.add(wrongPassLbl);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		
 	}
 }

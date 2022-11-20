@@ -198,6 +198,7 @@ public class Main {
     	Connection conn;
     	boolean permission = false;
     	while(!permission) {
+    		System.out.println("%ItsKwOn%".hashCode());
     		System.out.println("Please enter your password");
     		String pass = k.next();
 			try {

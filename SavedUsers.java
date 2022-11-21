@@ -8,53 +8,55 @@ import java.util.Scanner;
 
 public class SavedUsers {
 	
-	Vector<User> users = new Vector<>();
-	
-	private static void parseData(String str, int userNum){	
-		    Scanner lineScanner = new Scanner(str);
-		    lineScanner.useDelimiter(",");
-		    while(lineScanner.hasNext()){
-		    	User tmp = new User();
-		    	tmp.setUName(lineScanner.next());
-		    	tmp.setPermissions(Integer.parseInt(lineScanner.next()));
-		    }
-	}
-	/*assumes elevated privileges*/
-	
-	SavedUsers() throws IOException{
-		File file = new File("users.txt");
-		BufferedReader br = new BufferedReader(new FileReader(file));
+	private static boolean userFound(String thisSavedUser, String userAttempt) {
+		Scanner lineScanner = new Scanner(thisSavedUser);
+	    lineScanner.useDelimiter(",");
+	    while(lineScanner.hasNext()){
+	    	String uName = lineScanner.next();
+	    	if(uName==userAttempt) {
+	    		return true;
+	    	}
+	    	//dump the part we dont need
+	    	lineScanner.next();
+	    }
 		
-		String tmp;
-		int sentinel = 0;
+		return false;
+	}
+	
+	private static boolean hashFound(String thisSavedUser, String userAttempt) {
+		Scanner lineScanner = new Scanner(thisSavedUser);
+	    lineScanner.useDelimiter(",");
+	    while(lineScanner.hasNext()){
+	    	String uName = lineScanner.next();
+	    	if(uName==userAttempt) {
+	    		return true;
+	    	}
+	    	//dump the part we dont need
+	    	lineScanner.next();
+	    }
+		
+		return false;
+	}
+	public boolean exists(String name, String hash) throws IOException {
+		File users = new File("users.txt");
+		File hashes = new File("hashes.txt");
+		BufferedReader br = new BufferedReader(new FileReader(users));
+		BufferedReader br1 = new BufferedReader(new FileReader(hashes));
+		String thisUser;
+		String thisHash;
+		boolean uFound = false;
+		boolean hFound = true;
+		/*the number of users will always equal the number of hashes*/
 		while(br.readLine() != null) {
 			//TODO: change it so both files are read here 
-			tmp = br.readLine();
-			parseData(tmp, sentinel);
-			sentinel++;
+			thisUser = br.readLine();
+			thisHash = br1.readLine();
+			boolean tmp1 = userFound(thisUser, name);
+			boolean tmp2 = (hash == thisHash);
+			if(tmp1==true) {uFound = true;}
+			if(tmp2==true) {hFound = true;}
 		}
-	}
-	/**
-	 * Creates a new user to access the system and adds them to saved users Vector
-	 * 
-	 * @param uName The users username
-	 * @param pass  already hashed password
-	 * @param perm  permissions for the user (1 for normal 2 for heightened)
-	 */
-	public void setUser(String uName, int pass, int perm) {
-		User u1 = new User();
-		u1.setUName(uName);
-		u1.setPass(pass);
-		u1.setPermissions(perm);
-		users.add(u1);
-	}
-	public boolean exists(String name) {
-		for(int i=0; i<users.size();i++) {
-			User tmp = new User();
-			users.get(i);
-			//TODO: research ArrayList<T>
-		}
-		
+		if(uFound && hFound) {return true;}
 		return false;
 	}
 }

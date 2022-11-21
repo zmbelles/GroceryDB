@@ -1,6 +1,7 @@
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -14,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextPane;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 
 public class JFrameLogin extends JFrame implements ActionListener{
 	private JPanel contentPane;
@@ -68,7 +70,7 @@ public class JFrameLogin extends JFrame implements ActionListener{
 		contentPane.add(txtPassword);
 		
 		lblAcostasBarginMart = new JLabel("Acosta's Bargin Mart User Login");
-		lblAcostasBarginMart.setBounds(111, 12, 250, 15);
+		lblAcostasBarginMart.setBounds(111, 12, 151, 15);
 		contentPane.add(lblAcostasBarginMart);
 		
 		passwordField = new JPasswordField();
@@ -79,34 +81,59 @@ public class JFrameLogin extends JFrame implements ActionListener{
 		userPane.setBounds(129, 61, 200, 21);
 		contentPane.add(userPane);
 		
+		JLabel lblError = new JLabel("Something went wrong: ");
+		lblError.setBounds(47, 210, 321, 40);
+		lblError.setVisible(false);
+		contentPane.add(lblError);
+		
+		JLabel wrongPassLbl = new JLabel("ERROR: Wrong Password");
+		wrongPassLbl.setBounds(161, 171, 135, 14);
+		wrongPassLbl.setVisible(false);
+		contentPane.add(wrongPassLbl);
+		
+		JCheckBox ORbox1 = new JCheckBox("");
+		ORbox1.setBounds(87, 8, 21, 23);
+		ORbox1.setVisible(false);
+		contentPane.add(ORbox1);
+		
+		JCheckBox ORbox2 = new JCheckBox("");
+		ORbox2.setBounds(264, 8, 21, 23);
+		ORbox2.setVisible(false);
+		contentPane.add(ORbox2);
+		
 		btnSubmit = new JButton("Submit");
 		btnSubmit.setBounds(168, 135, 117, 25);
 		btnSubmit.addActionListener(new ActionListener()
 		{
 			  public void actionPerformed(ActionEvent e)
 			  {
-				  String user1 = "Admin";
-				  String pass1 = "Password";
+				  SavedUsers s = new SavedUsers();
 				  String user = userPane.getText();
-				  //bad code
 				  String pass = new String(passwordField.getPassword());
-				  boolean tmp = user.contentEquals(user1);
-				  boolean tmp2 = pass.contentEquals(pass1);
-				  if(user.contentEquals(user1) && pass.contentEquals("Password")) {
-					  frame.setVisible(false);
-					  JFrameHome jfh = new JFrameHome();
-					  jfh.setVisible(true);
-					  
-				  }
+				  
+				  try {
+					if(s.exists(user, pass)) {
+						  frame.setVisible(false);
+						  JFrameHome jfh = new JFrameHome();
+						  jfh.setVisible(true);
+					  }
+					  else {
+						  wrongPassLbl.setVisible(true);
+						  ORbox1.setVisible(true);
+						  ORbox2.setVisible(true);
+					  }
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					lblError.setText(lblError.getText() + e1);
+					lblError.setVisible(true);
+				}
 			  }
 			});
 		
 		contentPane.add(btnSubmit);
 		
-		JLabel wrongPassLbl = new JLabel("ERROR: Wrong Password");
-		wrongPassLbl.setBounds(161, 171, 135, 14);
-		wrongPassLbl.setVisible(false);
-		contentPane.add(wrongPassLbl);
+		
+		
 	}
 
 	@Override

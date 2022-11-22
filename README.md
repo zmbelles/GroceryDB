@@ -10,6 +10,6 @@ this Database can:
  
  
 How to use:
-    1. Download the repository
-    2. Install Connector/J and edit the build path modules to include the .jar file
-    3. edit line 175 of FunctionsOfJFrameHome to reflect your MySQL localhost, scheme, user, and password.
+  1. Download the repository
+  2. Install Connector/J and edit the build path modules to include the .jar file
+  3. edit line 175 of FunctionsOfJFrameHome to reflect your MySQL localhost, scheme, user, and password.

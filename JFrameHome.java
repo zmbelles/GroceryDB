@@ -7,6 +7,8 @@ import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JTextPane;
 import javax.swing.UIManager;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class JFrameHome extends JFrame {
 
@@ -45,6 +47,14 @@ public class JFrameHome extends JFrame {
 		contentPane.add(lblWelcomeAdmin);
 		
 		JButton btnAddTables = new JButton("Add Tables");
+		btnAddTables.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				FunctionsOfJFrameHome fjfh = new FunctionsOfJFrameHome();
+				fjfh.Connect(1);
+			}
+		});
 		btnAddTables.setBounds(29, 39, 164, 25);
 		contentPane.add(btnAddTables);
 		

@@ -13,8 +13,7 @@ import java.util.Scanner;
 import java.util.Stack;
 
 public class FunctionsOfJFrameHome {
-	private static final char[] pass = {'P','a','s','s','w','o','r','d'};
-	public static void tableCreation(Statement stmt) throws SQLException {
+	private static void tableCreation(Statement stmt) throws SQLException {
 		
 		Stack<String> stack = new Stack<String>();
 		
@@ -82,7 +81,7 @@ public class FunctionsOfJFrameHome {
 	}
     
 /*###############################ADDING DATA ALREADY IN SYSTEM###########################################*/	
-	public static void addLegacyData(Statement stmt) throws SQLException {
+	private static void addLegacyData(Statement stmt) throws SQLException {
 		Stack<String> stack = new Stack<String>();
 		
 		String addEmpdata = "insert into employee "
@@ -162,13 +161,16 @@ public class FunctionsOfJFrameHome {
 			System.out.println("Statement: " + sent + " has finished");
 			sent++;
 		}
-	}	
+	}
+	
 /*################################CONNECTING TO DATABASE############################################*/
 	public static int Connect(int formulaNum) {
     	Scanner k = new Scanner(System.in);
     	int errorCode = -1;
     	Connection conn;
     	boolean permission = false;
+    	
+    	/*attempt to connect to the database*/
     	while(!permission) {
 			try {
 				conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
@@ -176,6 +178,7 @@ public class FunctionsOfJFrameHome {
 				Statement stmt = conn.createStatement();
 				errorCode = 1;
 				if(formulaNum==1) {
+					tableCreation(stmt);
 				}
 				else if(formulaNum==2) {
 					addLegacyData(stmt);
@@ -183,6 +186,8 @@ public class FunctionsOfJFrameHome {
 				
 			}
 			catch(Exception e) {
+				//error code -1 = connection error
+				//error code 1 = SQLException
 				return errorCode;
 			}
     	}

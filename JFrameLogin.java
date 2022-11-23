@@ -70,15 +70,15 @@ public class JFrameLogin extends JFrame implements ActionListener{
 		contentPane.add(txtPassword);
 		
 		lblAcostasBarginMart = new JLabel("Acosta's Bargin Mart User Login");
-		lblAcostasBarginMart.setBounds(111, 12, 151, 15);
+		lblAcostasBarginMart.setBounds(111, 12, 239, 15);
 		contentPane.add(lblAcostasBarginMart);
 		
 		passwordField = new JPasswordField();
-		passwordField.setBounds(129, 109, 200, 19);
+		passwordField.setBounds(129, 109, 221, 19);
 		contentPane.add(passwordField);
 		
 		userPane = new JTextPane();
-		userPane.setBounds(129, 61, 200, 21);
+		userPane.setBounds(129, 61, 221, 21);
 		contentPane.add(userPane);
 		
 		JLabel lblError = new JLabel("Something went wrong: ");
@@ -87,7 +87,7 @@ public class JFrameLogin extends JFrame implements ActionListener{
 		contentPane.add(lblError);
 		
 		JLabel wrongPassLbl = new JLabel("ERROR: Wrong Password");
-		wrongPassLbl.setBounds(161, 171, 135, 14);
+		wrongPassLbl.setBounds(161, 171, 207, 27);
 		wrongPassLbl.setVisible(false);
 		contentPane.add(wrongPassLbl);
 		
@@ -97,7 +97,7 @@ public class JFrameLogin extends JFrame implements ActionListener{
 		contentPane.add(ORbox1);
 		
 		JCheckBox ORbox2 = new JCheckBox("");
-		ORbox2.setBounds(264, 8, 21, 23);
+		ORbox2.setBounds(347, 8, 21, 23);
 		ORbox2.setVisible(false);
 		contentPane.add(ORbox2);
 		
@@ -105,6 +105,7 @@ public class JFrameLogin extends JFrame implements ActionListener{
 		btnSubmit.setBounds(168, 135, 117, 25);
 		btnSubmit.addActionListener(new ActionListener()
 		{
+			  @Override
 			  public void actionPerformed(ActionEvent e)
 			  {
 				  SavedUsers s = new SavedUsers();
@@ -129,15 +130,12 @@ public class JFrameLogin extends JFrame implements ActionListener{
 				}
 			  }
 			});
-		
 		contentPane.add(btnSubmit);
-		
-		
-		
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		//this wont work unless i have this method??? idk man javas dumb
 		
 	}
 }

@@ -1,11 +1,21 @@
-import java.sql.*;
+package jFrameLogin;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Scanner;
 import java.util.Stack;
-import java.util.Vector;
 
-public class Main {
-
-	public static void tableCreation(Statement stmt) throws SQLException {
+public class FunctionsOfJFrameHome {
+	private static void tableCreation(Statement stmt) throws SQLException {
+		
 		Stack<String> stack = new Stack<String>();
 		
 		String sq1 = "create table members "
@@ -72,8 +82,9 @@ public class Main {
 	}
     
 /*###############################ADDING DATA ALREADY IN SYSTEM###########################################*/	
-	public static void addLegacyData(Statement stmt) throws SQLException {
+	private static void addLegacyData(Statement stmt) throws SQLException {
 		Stack<String> stack = new Stack<String>();
+		
 		String addEmpdata = "insert into employee "
 				+ "values (1,  'Gertrude',     'Bennings',   2, 27000.00, '1949-05-11',  111223333, 1),"
 					  + "(2,  'Jim',          'Johnson',     2, 28500.00, '2012-01-01',  867530900, 1),"
@@ -108,6 +119,7 @@ public class Main {
 					   + "(4, 'Dairy',     4444, 2, NULL),"
 					   + "(5, 'Logistics', 5555, 1, NULL)";
 		stack.push(addDeptData);
+		
 		String addInvStatusData = "INSERT INTO shipment_status"
                 + " VALUES ('1', '30', '15', '2022-12-26',NULL),"
                 + "('2', '50', '50', '2022-12-26',NULL),"
@@ -143,6 +155,7 @@ public class Main {
                 + "(2, '4.99', '2022-12-09', '2022-12-24', '8.99', 1, null),"
                 + "(3, '1.00', '2022-12-09', '2022-12-25', '9.12', 0, null)";
         stack.push(addDiscountsData);
+        
         int sent = 0;
 		while(!stack.empty()) {
 			stmt.execute(stack.pop());
@@ -151,147 +164,35 @@ public class Main {
 		}
 	}
 	
-	/*###############################SQL QUERIES OF EACH GROUP MEMBER###########################################*/
-	public static boolean performQueries(Statement stmt, int qNum) throws SQLException {
-		boolean ran = true;
-		if(qNum == 1) {
-			//TODO: DAN'S QUERIES
-		}
-		else if(qNum == 2) {
-			//TODO: ZACH'S QUERIES
-		}
-		else if(qNum == 3) {
-			//TODO: TONY'S QUERIES
-		}
-		else {
-			ran = false;
-		}
-		return ran;
-	}
-/*##########################################ADDING NEW DATA TO TABLES######################################*/
-	public static boolean addData(Statement stmt, String table) throws SQLException {
-		
-		if(table == "dep") {
-			
-		}
-		else if(table=="dis") {
-			
-		}
-		else if(table=="emp") {
-			
-		}
-		else if(table=="inv") {
-			
-		}
-		else if(table=="mem") {
-			
-		}
-		else if(table=="shp") {
-			
-		}
-		return false;
-	}
-	
-/*#######################################MAIN METHOD########################################################*/
-	public static void main(String[] args) {
+/*################################CONNECTING TO DATABASE############################################*/
+	public static int connect(int formulaNum) {
     	Scanner k = new Scanner(System.in);
+    	int errorCode = -1;
     	Connection conn;
     	boolean permission = false;
+    	
+    	/*attempt to connect to the database*/
     	while(!permission) {
-    		System.out.println("%ItsKwOn%".hashCode());
-    		System.out.println("Please enter your password");
-    		String pass = k.next();
 			try {
-				conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", pass);
+				conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
 				permission = true;
 				Statement stmt = conn.createStatement();
-				
-				System.out.println("Have you created the tables yet? (Y or N)");
-				char in = k.next().charAt(0);
-				if(in=='N' || in=='n') {
-					System.out.println("Adding tables.");
+				errorCode = 1;
+				if(formulaNum==1) {
 					tableCreation(stmt);
 				}
-				
-				System.out.println("Have you added the legacy data yet? (Y or N)");
-				in = k.next().charAt(0);
-				if(in=='N' || in=='n') {
-					System.out.println("Adding legacy data.");
+				else if(formulaNum==2) {
 					addLegacyData(stmt);
 				}
-				System.out.println("What would you like to do?");
-				System.out.println("==========================");
-				System.out.println("1. Perform queries");
-				System.out.println("2. add data");
-				System.out.println("3. Exit");
-				int choice = k.nextInt();
-				if(choice==1) {
-					boolean error = false;
-					boolean finished = false;
-					do {
-						System.out.println("Which query would you like to run?");
-						System.out.println("1. Dan Acosta's queries");
-						System.out.println("2. Zach Belles's queries");
-						System.out.println("3. Tony Le's queries");
-						int queryNum = k.nextInt();
-						error = performQueries(stmt, queryNum);
-						if(error) {
-							System.out.println("Something went wrong, please try again");
-						}
-						else {
-							System.out.println("Would you like to run any more queries? (Y or N)");
-							in = k.next().charAt(0);
-							if(in=='N' || in=='n') {
-								finished = true;
-							}
-						}
-					} while(error || !finished);
-				}
-				else if(choice == 2) {
-					boolean finished = false;
-					boolean error = false;
-					do {
-						System.out.println("Which table would you like to add data to?");
-						System.out.println("=========================================");
-						System.out.println("1. Departments");
-						System.out.println("2. Discouts");
-						System.out.println("3. Employee");
-						System.out.println("4. Inventory");
-						System.out.println("5. Members");
-						System.out.println("6. Shipment Status");
-						System.out.println("7. Exit");
-						int qNum = k.nextInt();
-						switch(qNum) {
-						case 1:
-							error = addData(stmt, "Dep");
-							break;
-						case 2:
-							error = addData(stmt, "Dis");
-							break;
-						case 3:
-							error = addData(stmt, "Emp");
-							break;
-						case 4:
-							error = addData(stmt, "Inv");
-							break;
-						case 5:
-							error = addData(stmt, "Mem");
-							break;
-						case 6:
-							error = addData(stmt, "Shp");
-							break;
-						case 7:
-							finished = true;
-						default:
-							System.out.println("invalid choice");
-						}
-					}while(error || !finished);
-				}
+				
 			}
 			catch(Exception e) {
-				System.out.println("Error: " + e);
+				//error code -1 = connection error
+				//error code 1 = SQLException
+				return errorCode;
 			}
     	}
     	permission = false;
+    	return 0;
     }
 }

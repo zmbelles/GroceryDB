@@ -1,3 +1,4 @@
+package jFrameLogin;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -52,7 +53,7 @@ public class JFrameHome extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				FunctionsOfJFrameHome fjfh = new FunctionsOfJFrameHome();
-				fjfh.Connect(1);
+				fjfh.connect(1);
 			}
 		});
 		btnAddTables.setBounds(29, 39, 164, 25);

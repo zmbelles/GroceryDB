@@ -1,12 +1,8 @@
 package jFrameData;
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
-import jFrameLogin.errorPopup;
-
 import javax.swing.JButton;
 import java.awt.GridLayout;
 import javax.swing.JLabel;

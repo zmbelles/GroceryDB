@@ -11,6 +11,7 @@ import javax.swing.JLabel;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Stack;
 import java.awt.event.ActionEvent;
@@ -53,8 +54,9 @@ public class JFrameNewEmployee extends JFrame {
 				String getNewEmpNum = "Select MAX(EID) "
 						+ "from employee";
 				stmt = conn.createStatement();
-				ResultSet rs = new ResultSet
-				boolean success = importEmpData(stmt);
+				ResultSet rs = stmt.executeQuery(getNewEmpNum);
+				int oldEmpNum = Integer.parseInt(rs.getString("EID"));
+				boolean success = importEmpData(stmt, oldEmpNum++);
 				if(success) {
 					return 0;
 				}

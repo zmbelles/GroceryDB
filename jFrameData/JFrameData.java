@@ -12,7 +12,14 @@ import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
-
+/**
+ * 
+ * @author Dan Acosta, Zachary Belles, Tony Le
+ * {@summary menu to ask the user which table they would like to add new data to. each choice is linked to its own class
+ * that connects to the database and follows out the instructions} 
+ *
+ */
+@SuppressWarnings("serial")
 public class JFrameData extends JFrame {
 
 	private JPanel contentPane;

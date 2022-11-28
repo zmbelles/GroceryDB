@@ -3,10 +3,6 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -18,6 +14,7 @@ import javax.swing.JTextPane;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 
+@SuppressWarnings("serial")
 public class JFrameLogin extends JFrame implements ActionListener{
 	private JPanel contentPane;
 	private JTextField txtUsername;

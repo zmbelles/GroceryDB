@@ -1,16 +1,8 @@
 package jFrameLogin;
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Scanner;
 import java.util.Stack;
 
 public class FunctionsOfJFrameHome {
@@ -166,7 +158,6 @@ public class FunctionsOfJFrameHome {
 	
 /*################################CONNECTING TO DATABASE############################################*/
 	public static int connect(int formulaNum) {
-    	Scanner k = new Scanner(System.in);
     	int errorCode = -1;
     	Connection conn;
     	boolean permission = false;

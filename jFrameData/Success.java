@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.util.Stack;
 import java.awt.event.ActionEvent;
 
 @SuppressWarnings("serial")
@@ -17,6 +18,7 @@ public class Success extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 
+	private Stack<String> stack;
 	/**
 	 * Launch the application.
 	 */

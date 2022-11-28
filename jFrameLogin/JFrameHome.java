@@ -11,6 +11,7 @@ import javax.swing.UIManager;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+@SuppressWarnings("serial")
 public class JFrameHome extends JFrame {
 
 	private JPanel contentPane;
@@ -50,6 +51,7 @@ public class JFrameHome extends JFrame {
 		JButton btnAddTables = new JButton("Add Tables");
 		btnAddTables.addActionListener(new ActionListener() {
 			
+			@SuppressWarnings("static-access")
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				FunctionsOfJFrameHome fjfh = new FunctionsOfJFrameHome();

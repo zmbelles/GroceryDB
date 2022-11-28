@@ -9,9 +9,11 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Stack;
 import java.awt.event.ActionEvent;
@@ -26,6 +28,7 @@ public class JFrameNewEmployee extends JFrame {
 	private JTextField txtEmpDOB;
 	private JTextField txtEmpSSN;
 	private Stack<String> stack;
+	private JTextField txtEmpDept;
 
 	/**
 	 * Launch the application.
@@ -42,6 +45,21 @@ public class JFrameNewEmployee extends JFrame {
 			}
 		});
 	}
+	public void executeQuery() throws SQLException {
+		Connection conn;
+		conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
+		Statement stmt = conn.createStatement();
+		String addEmp = "INSERT INTO employee "
+				+ "VALUES("
+				+ stack.pop() + ", "
+				+ stack.pop() + ", "
+				+ stack.pop() + ", "
+				+ stack.pop() + ", "
+				+ stack.pop() + ", "
+				+ stack.pop() + ", "
+				+ stack.pop() + ")";
+		stmt.execute(addEmp);
+	}
 	public int connect() {
 		int errorCode = -1;
     	Connection conn;
@@ -53,13 +71,10 @@ public class JFrameNewEmployee extends JFrame {
 				int newEmpNum;
 				String getNewEmpNum = "Select MAX(EID) "
 						+ "from employee";
-				stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(getNewEmpNum);
 				int oldEmpNum = Integer.parseInt(rs.getString("EID"));
-				boolean success = importEmpData(stmt, oldEmpNum++);
-				if(success) {
-					return 0;
-				}
+				newEmpNum = oldEmpNum++;
+				return newEmpNum;
 				
 			}
 			catch(Exception e) {
@@ -68,11 +83,6 @@ public class JFrameNewEmployee extends JFrame {
 				return errorCode;
 			}
     	}
-    	return errorCode;
-	}
-	private boolean importEmpData(Statement stmt, int newEmpNum){
-		
-		return false;
 	}
 	/**
 	 * Create the frame.
@@ -101,19 +111,19 @@ public class JFrameNewEmployee extends JFrame {
 		txtEmpSal = new JTextField();
 		txtEmpSal.setText("Enter employee salary here");
 		txtEmpSal.setColumns(10);
-		txtEmpSal.setBounds(81, 106, 262, 19);
+		txtEmpSal.setBounds(81, 135, 262, 19);
 		contentPane.add(txtEmpSal);
 		
 		txtEmpDOB = new JTextField();
 		txtEmpDOB.setText("Enter employee DOB here (DD/MM/YYYY)");
 		txtEmpDOB.setColumns(10);
-		txtEmpDOB.setBounds(81, 137, 262, 19);
+		txtEmpDOB.setBounds(81, 165, 262, 19);
 		contentPane.add(txtEmpDOB);
 		
 		txtEmpSSN = new JTextField();
 		txtEmpSSN.setText("Enter employee SSN here");
 		txtEmpSSN.setColumns(10);
-		txtEmpSSN.setBounds(81, 168, 262, 19);
+		txtEmpSSN.setBounds(81, 195, 262, 19);
 		contentPane.add(txtEmpSSN);
 		
 		JButton btnConfirm = new JButton("Confirm");
@@ -125,22 +135,37 @@ public class JFrameNewEmployee extends JFrame {
 				String empSSN = txtEmpSSN.getText();
 				String empDOB = txtEmpDOB.getText();
 				String empSal = txtEmpDOB.getText();
+				String empDept = txtEmpDept.getText();
 				String empLName = txtEmpLName.getText();
 				String empFName = txtEmpFName.getText();
 				
-				stack.push(empFName);
-				stack.push(empLName);
-				stack.push(empSal);
-				stack.push(empDOB);
 				stack.push(empSSN);
-				connect();
+				stack.push(empDOB);
+				stack.push(empSal);
+				stack.push(empDept);
+				stack.push(empLName);
+				stack.push(empFName);
+				String newEmpNum = Integer.toString(connect());
+				stack.push(newEmpNum);
+				JFrameNewEmployee.this.dispatchEvent(new WindowEvent(JFrameNewEmployee.this, WindowEvent.WINDOW_CLOSED));
+				JFrameData jfd = new JFrameData();
+				jfd.dispatchEvent(new WindowEvent(jfd, WindowEvent.WINDOW_OPENED));
+				Success s = new Success();
+				s.setAlwaysOnTop(true);
 			}
 		});
-		btnConfirm.setBounds(143, 199, 117, 25);
+		
+		btnConfirm.setBounds(143, 225, 117, 25);
 		contentPane.add(btnConfirm);
 		
 		JLabel lblAddNewEmployee = new JLabel("Add New Employee");
 		lblAddNewEmployee.setBounds(143, 12, 164, 15);
 		contentPane.add(lblAddNewEmployee);
+		
+		txtEmpDept = new JTextField();
+		txtEmpDept.setText("Enter employee department number here");
+		txtEmpDept.setColumns(10);
+		txtEmpDept.setBounds(81, 105, 262, 19);
+		contentPane.add(txtEmpDept);
 	}
 }

@@ -1,27 +1,26 @@
 package jFrameLogin;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Vector;
 import java.util.Scanner;
 
 public class SavedUsers {
 	
 	private static boolean userFound(String thisSavedUser, String userAttempt) {
-		Scanner lineScanner = new Scanner(thisSavedUser);
-	    lineScanner.useDelimiter(",");
-	    while(lineScanner.hasNext()){
-	    	String uName = lineScanner.next();
-	    	if(uName.equals(userAttempt)) {
-	    		return true;
-	    	}
-	    	//dump the part we dont need
-	    	lineScanner.next();
-	    }
-		lineScanner.close();
-		return false;
+		try (Scanner lineScanner = new Scanner(thisSavedUser)) {
+			lineScanner.useDelimiter(",");
+			while(lineScanner.hasNext()){
+				String uName = lineScanner.next();
+				if(uName.equals(userAttempt)) {
+					return true;
+				}
+				//dump the part we dont need
+				lineScanner.next();
+			}
+			lineScanner.close();
+		}
+	    return false;
 	}
 	public boolean exists(String name, String hash) throws IOException {
 		File users = new File("users.txt");

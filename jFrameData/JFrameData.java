@@ -1,8 +1,13 @@
 package jFrameData;
 import java.awt.EventQueue;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import jFrameLogin.errorPopup;
+import jFrameLogin.JFrameHome;
+
 import javax.swing.JButton;
 import java.awt.GridLayout;
 import javax.swing.JLabel;
@@ -12,14 +17,7 @@ import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
-/**
- * 
- * @author Dan Acosta, Zachary Belles, Tony Le
- * {@summary menu to ask the user which table they would like to add new data to. each choice is linked to its own class
- * that connects to the database and follows out the instructions} 
- *
- */
-@SuppressWarnings("serial")
+
 public class JFrameData extends JFrame {
 
 	private JPanel contentPane;
@@ -52,53 +50,86 @@ public class JFrameData extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JPanel contentPane_1 = new JPanel();
-		contentPane_1.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane_1.setBounds(0, 0, 438, 260);
-		contentPane.add(contentPane_1);
-		contentPane_1.setLayout(new GridLayout(0, 1, 0, 0));
-		
-		JLabel lblWelcomeAdmin = new JLabel("Welcome, Admin");
-		contentPane_1.add(lblWelcomeAdmin);
-		
 		JButton btnAddNewEmployees = new JButton("Add New Employees");
 		btnAddNewEmployees.addActionListener(new ActionListener() {
-			
-			@Override
 			public void actionPerformed(ActionEvent e) {
-				JFrameNewEmployee jfne = new JFrameNewEmployee();
-				jfne.setVisible(true);
-				jfne.setEnabled(true);
-				jfne.dispatchEvent(new WindowEvent(jfne, WindowEvent.WINDOW_OPENED));
-				JFrameData.this.dispatchEvent(new WindowEvent(
-						JFrameData.this, WindowEvent.WINDOW_CLOSING));
-				JFrameData.this.setAlwaysOnTop(false);
-				
+				JFrameNewEmployee emp = new JFrameNewEmployee();
+				emp.dispatchEvent(new WindowEvent(emp, WindowEvent.WINDOW_OPENED));
+				JFrameData.this.dispatchEvent(new WindowEvent(JFrameData.this, WindowEvent.WINDOW_CLOSED));
 			}
 		});
-		contentPane_1.add(btnAddNewEmployees);
+		btnAddNewEmployees.setBounds(12, 89, 200, 50);
+		contentPane.add(btnAddNewEmployees);
 		
-		JButton btnAddNewTables = new JButton("Add New Departments");
-		contentPane_1.add(btnAddNewTables);
+		JButton btnAddNewDepts = new JButton("Add New Departments");
+		btnAddNewDepts.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFrameNewDepartment dept = new JFrameNewDepartment();
+				dept.dispatchEvent(new WindowEvent(dept, WindowEvent.WINDOW_OPENED));
+				JFrameData.this.dispatchEvent(new WindowEvent(JFrameData.this, WindowEvent.WINDOW_CLOSED));
+			}
+		});
+		btnAddNewDepts.setBounds(225, 39, 200, 50);
+		contentPane.add(btnAddNewDepts);
 		
 		JButton btnAddNewDiscounts = new JButton("Add New Discounts");
-		contentPane_1.add(btnAddNewDiscounts);
-		
-		JButton btnAddNewInventory = new JButton("Add New Inventory");
-		contentPane_1.add(btnAddNewInventory);
+		btnAddNewDiscounts.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFrameNewDiscount disc = new JFrameNewDiscount();
+				disc.dispatchEvent(new WindowEvent(disc, WindowEvent.WINDOW_OPENED));
+				JFrameData.this.dispatchEvent(new WindowEvent(JFrameData.this, WindowEvent.WINDOW_CLOSED));
+			}
+		});
+		btnAddNewDiscounts.setBounds(225, 89, 200, 50);
+		contentPane.add(btnAddNewDiscounts);
 		
 		JButton btnAddNewMembers = new JButton("Add New Members");
-		contentPane_1.add(btnAddNewMembers);
+		btnAddNewMembers.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFrameNewMember mem = new JFrameNewMember();
+				mem.dispatchEvent(new WindowEvent(mem, WindowEvent.WINDOW_OPENED));
+				JFrameData.this.dispatchEvent(new WindowEvent(JFrameData.this, WindowEvent.WINDOW_CLOSED));
+			}
+		});
+		btnAddNewMembers.setBounds(12, 39, 200, 50);
+		contentPane.add(btnAddNewMembers);
 		
 		JButton btnAddNewShipments = new JButton("Add New Shipments");
-		contentPane_1.add(btnAddNewShipments);
+		btnAddNewShipments.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFrameNewShipment ship = new JFrameNewShipment();
+				ship.dispatchEvent(new WindowEvent(ship, WindowEvent.WINDOW_OPENED));
+				JFrameData.this.dispatchEvent(new WindowEvent(JFrameData.this, WindowEvent.WINDOW_CLOSED));
+			}
+		});
+		btnAddNewShipments.setBounds(12, 137, 200, 50);
+		contentPane.add(btnAddNewShipments);
 		
-		JTextPane txtAcostaGuarentee = new JTextPane();
-		txtAcostaGuarentee.setFont(new Font("Dialog", Font.PLAIN, 12));
-		txtAcostaGuarentee.setText("          Acosta's, \"We guarentee nothing... but freshness\"");
-		txtAcostaGuarentee.setForeground(UIManager.getColor("Button.foreground"));
-		txtAcostaGuarentee.setBackground(UIManager.getColor("Button.background"));
-		contentPane_1.add(txtAcostaGuarentee);
+		JLabel lblWhichTable = new JLabel("Which table would you like to add data to?");
+		lblWhichTable.setBounds(62, 12, 327, 15);
+		contentPane.add(lblWhichTable);
+		
+		JButton btnAddNewInventory = new JButton("Add New Inventory");
+		btnAddNewInventory.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFrameNewInventory inv = new JFrameNewInventory();
+				inv.dispatchEvent(new WindowEvent(inv, WindowEvent.WINDOW_OPENED));
+				JFrameData.this.dispatchEvent(new WindowEvent(JFrameData.this, WindowEvent.WINDOW_CLOSED));
+			}
+		});
+		btnAddNewInventory.setBounds(225, 137, 200, 50);
+		contentPane.add(btnAddNewInventory);
+		
+		JButton btnBackToHome = new JButton("Back to Home");
+		btnBackToHome.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFrameHome jfh = new JFrameHome();
+				jfh.dispatchEvent(new WindowEvent(jfh, WindowEvent.WINDOW_OPENED));
+				JFrameData.this.dispatchEvent(new WindowEvent(JFrameData.this, WindowEvent.WINDOW_CLOSED));
+			}
+		});
+		btnBackToHome.setBounds(154, 214, 130, 25);
+		contentPane.add(btnBackToHome);
 		
 	}
 	

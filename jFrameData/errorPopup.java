@@ -15,7 +15,7 @@ import java.awt.event.ActionEvent;
 public class errorPopup extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
-
+	private JLabel lblErrorUnableTo;
 	/**
 	 * Launch the application.
 	 */
@@ -28,7 +28,11 @@ public class errorPopup extends JDialog {
 			e.printStackTrace();
 		}
 	}
-
+	public void setErrorText(String errorMessage) {
+		String newErrorMessage = "ERROR: ";
+		newErrorMessage += errorMessage;
+		lblErrorUnableTo.setText(newErrorMessage);
+	}
 	/**
 	 * Create the dialog.
 	 */
@@ -40,9 +44,9 @@ public class errorPopup extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 		
-		JLabel lblErrorUnableTo = new JLabel("ERROR: UNABLE TO CONNECT TO DATABASE");
-		lblErrorUnableTo.setFont(new Font("DialogInput", Font.BOLD, 16));
-		lblErrorUnableTo.setBounds(26, 31, 440, 81);
+		lblErrorUnableTo = new JLabel("ERROR: UNABLE TO CONNECT TO DATABASE");
+		lblErrorUnableTo.setFont(new Font("DialogInput", Font.BOLD, 10));
+		lblErrorUnableTo.setBounds(26, 24, 383, 81);
 		contentPanel.add(lblErrorUnableTo);
 		JButton btnOk = new JButton("OK");
 		btnOk.addActionListener(new ActionListener() {

@@ -5,19 +5,14 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import jFrameLogin.errorPopup;
 import jFrameLogin.JFrameHome;
 
 import javax.swing.JButton;
-import java.awt.GridLayout;
 import javax.swing.JLabel;
-import javax.swing.JTextPane;
-import javax.swing.UIManager;
-import java.awt.Font;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 
+@SuppressWarnings("serial")
 public class JFrameData extends JFrame {
 
 	private JPanel contentPane;
@@ -54,8 +49,12 @@ public class JFrameData extends JFrame {
 		btnAddNewEmployees.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFrameNewEmployee emp = new JFrameNewEmployee();
-				emp.dispatchEvent(new WindowEvent(emp, WindowEvent.WINDOW_OPENED));
-				JFrameData.this.dispatchEvent(new WindowEvent(JFrameData.this, WindowEvent.WINDOW_CLOSED));
+				emp.setEnabled(true);
+				emp.setVisible(true);
+				emp.setAlwaysOnTop(true);
+				JFrameData.this.setEnabled(false);
+				JFrameData.this.setAlwaysOnTop(false);
+				JFrameData.this.setVisible(false);
 			}
 		});
 		btnAddNewEmployees.setBounds(12, 89, 200, 50);
@@ -65,8 +64,12 @@ public class JFrameData extends JFrame {
 		btnAddNewDepts.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFrameNewDepartment dept = new JFrameNewDepartment();
-				dept.dispatchEvent(new WindowEvent(dept, WindowEvent.WINDOW_OPENED));
-				JFrameData.this.dispatchEvent(new WindowEvent(JFrameData.this, WindowEvent.WINDOW_CLOSED));
+				dept.setEnabled(true);
+				dept.setVisible(true);
+				dept.setAlwaysOnTop(true);
+				JFrameData.this.setEnabled(false);
+				JFrameData.this.setAlwaysOnTop(false);
+				JFrameData.this.setVisible(false);
 			}
 		});
 		btnAddNewDepts.setBounds(225, 39, 200, 50);
@@ -76,8 +79,12 @@ public class JFrameData extends JFrame {
 		btnAddNewDiscounts.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFrameNewDiscount disc = new JFrameNewDiscount();
-				disc.dispatchEvent(new WindowEvent(disc, WindowEvent.WINDOW_OPENED));
-				JFrameData.this.dispatchEvent(new WindowEvent(JFrameData.this, WindowEvent.WINDOW_CLOSED));
+				disc.setEnabled(true);
+				disc.setVisible(true);
+				disc.setAlwaysOnTop(true);
+				JFrameData.this.setEnabled(false);
+				JFrameData.this.setAlwaysOnTop(false);
+				JFrameData.this.setVisible(false);
 			}
 		});
 		btnAddNewDiscounts.setBounds(225, 89, 200, 50);
@@ -87,8 +94,12 @@ public class JFrameData extends JFrame {
 		btnAddNewMembers.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFrameNewMember mem = new JFrameNewMember();
-				mem.dispatchEvent(new WindowEvent(mem, WindowEvent.WINDOW_OPENED));
-				JFrameData.this.dispatchEvent(new WindowEvent(JFrameData.this, WindowEvent.WINDOW_CLOSED));
+				mem.setEnabled(true);
+				mem.setVisible(true);
+				mem.setAlwaysOnTop(true);
+				JFrameData.this.setEnabled(false);
+				JFrameData.this.setAlwaysOnTop(false);
+				JFrameData.this.setVisible(false);
 			}
 		});
 		btnAddNewMembers.setBounds(12, 39, 200, 50);
@@ -98,23 +109,31 @@ public class JFrameData extends JFrame {
 		btnAddNewShipments.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFrameNewShipment ship = new JFrameNewShipment();
-				ship.dispatchEvent(new WindowEvent(ship, WindowEvent.WINDOW_OPENED));
-				JFrameData.this.dispatchEvent(new WindowEvent(JFrameData.this, WindowEvent.WINDOW_CLOSED));
+				ship.setEnabled(true);
+				ship.setVisible(true);
+				ship.setAlwaysOnTop(true);
+				JFrameData.this.setEnabled(false);
+				JFrameData.this.setAlwaysOnTop(false);
+				JFrameData.this.setVisible(false);
 			}
 		});
 		btnAddNewShipments.setBounds(12, 137, 200, 50);
 		contentPane.add(btnAddNewShipments);
 		
 		JLabel lblWhichTable = new JLabel("Which table would you like to add data to?");
-		lblWhichTable.setBounds(62, 12, 327, 15);
+		lblWhichTable.setBounds(118, 13, 232, 15);
 		contentPane.add(lblWhichTable);
 		
 		JButton btnAddNewInventory = new JButton("Add New Inventory");
 		btnAddNewInventory.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFrameNewInventory inv = new JFrameNewInventory();
-				inv.dispatchEvent(new WindowEvent(inv, WindowEvent.WINDOW_OPENED));
-				JFrameData.this.dispatchEvent(new WindowEvent(JFrameData.this, WindowEvent.WINDOW_CLOSED));
+				inv.setEnabled(true);
+				inv.setVisible(true);
+				inv.setAlwaysOnTop(true);
+				JFrameData.this.setEnabled(false);
+				JFrameData.this.setAlwaysOnTop(false);
+				JFrameData.this.setVisible(false);
 			}
 		});
 		btnAddNewInventory.setBounds(225, 137, 200, 50);
@@ -122,11 +141,16 @@ public class JFrameData extends JFrame {
 		
 		JButton btnBackToHome = new JButton("Back to Home");
 		btnBackToHome.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFrameHome jfh = new JFrameHome();
-				jfh.dispatchEvent(new WindowEvent(jfh, WindowEvent.WINDOW_OPENED));
-				JFrameData.this.dispatchEvent(new WindowEvent(JFrameData.this, WindowEvent.WINDOW_CLOSED));
-			}
+				jfh.setEnabled(true);
+				jfh.setVisible(true);
+				jfh.setAlwaysOnTop(true);
+				JFrameData.this.setEnabled(false);
+				JFrameData.this.setAlwaysOnTop(false);
+				JFrameData.this.setVisible(false);
+				}
 		});
 		btnBackToHome.setBounds(154, 214, 130, 25);
 		contentPane.add(btnBackToHome);

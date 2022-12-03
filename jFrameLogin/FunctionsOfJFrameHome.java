@@ -157,7 +157,7 @@ public class FunctionsOfJFrameHome {
 	}
 	
 /*################################CONNECTING TO DATABASE############################################*/
-	public static int connect(int formulaNum) {
+	public int connect(int formulaNum) {
     	int errorCode = -1;
     	Connection conn;
     	boolean permission = false;

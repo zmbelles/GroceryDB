@@ -9,7 +9,6 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -29,6 +28,7 @@ public class JFrameNewEmployee extends JFrame {
 	private JTextField txtEmpSSN;
 	private Stack<String> stack;
 	private JTextField txtEmpDept;
+	private JButton btnConfirm_1;
 
 	/**
 	 * Launch the application.
@@ -138,6 +138,7 @@ public class JFrameNewEmployee extends JFrame {
 				String empDept = txtEmpDept.getText();
 				String empLName = txtEmpLName.getText();
 				String empFName = txtEmpFName.getText();
+				String newEmpNum = Integer.toString(connect());
 				
 				stack.push(empSSN);
 				stack.push(empDOB);
@@ -145,17 +146,34 @@ public class JFrameNewEmployee extends JFrame {
 				stack.push(empDept);
 				stack.push(empLName);
 				stack.push(empFName);
-				String newEmpNum = Integer.toString(connect());
 				stack.push(newEmpNum);
-				JFrameNewEmployee.this.dispatchEvent(new WindowEvent(JFrameNewEmployee.this, WindowEvent.WINDOW_CLOSED));
-				JFrameData jfd = new JFrameData();
-				jfd.dispatchEvent(new WindowEvent(jfd, WindowEvent.WINDOW_OPENED));
-				Success s = new Success();
-				s.setAlwaysOnTop(true);
+				
+				try {
+					executeQuery();
+					JFrameNewEmployee.this.setEnabled(false);
+					JFrameNewEmployee.this.setVisible(false);
+					
+					JFrameData jfd = new JFrameData();
+					jfd.setEnabled(true);
+					jfd.setVisible(true);
+					jfd.setAlwaysOnTop(true);
+					
+					Success s = new Success();
+					s.setEnabled(true);
+					s.setVisible(true);
+					s.setAlwaysOnTop(true);
+				} catch (SQLException e1) {
+					errorPopup error = new errorPopup();
+					error.setEnabled(true);
+					error.setErrorText(e1.toString());
+					error.setVisible(true);
+					error.setAlwaysOnTop(true);
+				}
+				
 			}
 		});
 		
-		btnConfirm.setBounds(143, 225, 117, 25);
+		btnConfirm.setBounds(204, 225, 117, 25);
 		contentPane.add(btnConfirm);
 		
 		JLabel lblAddNewEmployee = new JLabel("Add New Employee");
@@ -167,5 +185,20 @@ public class JFrameNewEmployee extends JFrame {
 		txtEmpDept.setColumns(10);
 		txtEmpDept.setBounds(81, 105, 262, 19);
 		contentPane.add(txtEmpDept);
+		
+		btnConfirm_1 = new JButton("Back");
+		btnConfirm_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFrameNewEmployee.this.setEnabled(false);
+				JFrameNewEmployee.this.setVisible(false);
+				JFrameData data = new JFrameData();
+				
+				data.setEnabled(true);
+				data.setVisible(true);
+				data.setAlwaysOnTop(true);
+			}
+		});
+		btnConfirm_1.setBounds(81, 225, 117, 25);
+		contentPane.add(btnConfirm_1);
 	}
 }

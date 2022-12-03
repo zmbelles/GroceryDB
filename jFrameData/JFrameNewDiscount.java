@@ -6,14 +6,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import jFrameLogin.Success;
-import jFrameLogin.errorPopup;
-
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -22,6 +18,7 @@ import java.sql.Statement;
 import java.util.Stack;
 import java.awt.event.ActionEvent;
 
+@SuppressWarnings("serial")
 public class JFrameNewDiscount extends JFrame {
 
 	private JPanel contentPane;
@@ -151,24 +148,28 @@ public class JFrameNewDiscount extends JFrame {
 				stack.push(discoID);
 				try {
 					executeQuery();
-					JFrameNewDiscount.this.dispatchEvent(new WindowEvent(JFrameNewDiscount.this, WindowEvent.WINDOW_CLOSED));
+					JFrameNewDiscount.this.setVisible(false);
+					JFrameNewDiscount.this.setEnabled(false);
 					
 					JFrameData jfd = new JFrameData();
-					jfd.dispatchEvent(new WindowEvent(jfd, WindowEvent.WINDOW_OPENED));
+					jfd.setVisible(true);
+					jfd.setEnabled(true);
 					jfd.setAlwaysOnTop(true);
 					
 					Success s = new Success();
-					s.dispatchEvent(new WindowEvent(s, WindowEvent.WINDOW_OPENED));
+					s.setVisible(true);
+					s.setEnabled(true);
 					s.setAlwaysOnTop(true);
 				} 
 				catch (SQLException e1) {
 					errorPopup erp = new errorPopup();
-					erp.dispatchEvent(new WindowEvent(erp, WindowEvent.WINDOW_CLOSED));
+					erp.setEnabled(true);
+					erp.setVisible(true);
 					erp.setAlwaysOnTop(true);
-					JFrameNewDiscount.this.dispatchEvent(new WindowEvent(JFrameNewDiscount.this, WindowEvent.WINDOW_CLOSED));
 					
 					JFrameData jfd = new JFrameData();
-					jfd.dispatchEvent(new WindowEvent(jfd, WindowEvent.WINDOW_OPENED));
+					jfd.setEnabled(rootPaneCheckingEnabled);
+					jfd.setVisible(false);
 					jfd.setAlwaysOnTop(true);
 				}
 				

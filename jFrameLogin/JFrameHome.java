@@ -4,6 +4,11 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import jFrameData.JFrameData;
+import jFrameData.Success;
+import jFrameData.errorPopup;
+
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JTextPane;
@@ -55,21 +60,64 @@ public class JFrameHome extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				FunctionsOfJFrameHome fjfh = new FunctionsOfJFrameHome();
-				fjfh.connect(1);
+				int status = fjfh.connect(1);
+				if(status==0) {
+					Success success_popup = new Success();
+					success_popup.setEnabled(true);
+					success_popup.setVisible(true);
+					success_popup.setAlwaysOnTop(true);
+				}
+				else {
+					errorPopup err = new errorPopup();
+					err.setEnabled(true);
+					err.setVisible(true);
+					err.setAlwaysOnTop(true);
+				}
 			}
 		});
 		btnAddTables.setBounds(29, 39, 164, 25);
 		contentPane.add(btnAddTables);
 		
 		JButton btnAddLegacyData = new JButton("Add Legacy Data");
+		btnAddLegacyData.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				FunctionsOfJFrameHome fjfh = new FunctionsOfJFrameHome();
+				int status = fjfh.connect(2);
+				if(status==0) {
+					Success success_popup = new Success();
+					success_popup.setEnabled(true);
+					success_popup.setVisible(true);
+					success_popup.setAlwaysOnTop(true);
+				}
+				else {
+					errorPopup err = new errorPopup();
+					err.setEnabled(true);
+					err.setVisible(true);
+					err.setAlwaysOnTop(true);
+				}
+			}
+		});
 		btnAddLegacyData.setBounds(29, 91, 164, 25);
 		contentPane.add(btnAddLegacyData);
 		
-		JButton btnAddLegacyData_1 = new JButton("Perform Queries");
-		btnAddLegacyData_1.setBounds(257, 39, 164, 25);
-		contentPane.add(btnAddLegacyData_1);
+		JButton btnPerform = new JButton("Perform Queries");
+		btnPerform.setBounds(257, 39, 164, 25);
+		contentPane.add(btnPerform);
 		
 		JButton btnAddNewData = new JButton("Add New Data");
+		btnAddNewData.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFrameData data = new JFrameData();
+				data.setEnabled(true);
+				data.setVisible(true);
+				data.setAlwaysOnTop(true);
+				JFrameHome.this.setEnabled(false);
+				JFrameHome.this.setAlwaysOnTop(false);
+				JFrameHome.this.setVisible(false);
+			}
+		});
 		btnAddNewData.setBounds(257, 91, 164, 25);
 		contentPane.add(btnAddNewData);
 		

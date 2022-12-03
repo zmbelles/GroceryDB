@@ -12,16 +12,13 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import jFrameLogin.Success;
-import jFrameLogin.errorPopup;
-
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 
+@SuppressWarnings("serial")
 public class JFrameNewShipment extends JFrame {
 
 	private Stack<String> stack;
@@ -141,26 +138,23 @@ public class JFrameNewShipment extends JFrame {
 				
 				try {
 					executeQuery();
-					JFrameNewShipment.this.dispatchEvent(new WindowEvent(JFrameNewShipment.this, WindowEvent.WINDOW_CLOSED));
-					
+					JFrameNewShipment.this.setEnabled(false);
+					JFrameNewShipment.this.setVisible(false);
 					JFrameData jfd = new JFrameData();
-					jfd.dispatchEvent(new WindowEvent(jfd, WindowEvent.WINDOW_OPENED));
+					jfd.setEnabled(true);
+					jfd.setVisible(true);
 					jfd.setAlwaysOnTop(true);
 					
 					Success s = new Success();
-					s.dispatchEvent(new WindowEvent(s, WindowEvent.WINDOW_OPENED));
+					s.setEnabled(true);
+					s.setVisible(true);
 					s.setAlwaysOnTop(true);
-				} 
-				catch (SQLException e1) {
-					JFrameData jfd = new JFrameData();
-					jfd.dispatchEvent(new WindowEvent(jfd, WindowEvent.WINDOW_OPENED));
-					jfd.setAlwaysOnTop(true);
-					
+				} catch (SQLException e1) {
 					errorPopup erp = new errorPopup();
-					erp.dispatchEvent(new WindowEvent(erp, WindowEvent.WINDOW_CLOSED));
+					erp.setEnabled(true);
+					erp.setErrorText(e1.toString());
+					erp.setVisible(true);
 					erp.setAlwaysOnTop(true);
-					JFrameNewShipment.this.dispatchEvent(new WindowEvent(JFrameNewShipment.this, WindowEvent.WINDOW_CLOSED));
-					
 				}
 			}
 		});

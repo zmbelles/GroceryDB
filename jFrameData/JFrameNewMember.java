@@ -6,14 +6,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import jFrameLogin.Success;
-import jFrameLogin.errorPopup;
-
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -22,6 +18,7 @@ import java.sql.Statement;
 import java.util.Stack;
 import java.awt.event.ActionEvent;
 
+@SuppressWarnings("serial")
 public class JFrameNewMember extends JFrame {
 
 	private JPanel contentPane;
@@ -145,27 +142,22 @@ public class JFrameNewMember extends JFrame {
 				stack.push(DOB);
 				stack.push(lName);
 				stack.push(fName);
+				stack.push(MID);
 				try {
 					executeQuery();
+					JFrameNewMember.this.setEnabled(false);
+					JFrameNewMember.this.setVisible(false);
+					JFrameData jfd = new JFrameData();
+					jfd.setEnabled(true);
+					jfd.setVisible(true);
+					jfd.setAlwaysOnTop(true);
 				} catch (SQLException e1) {
 					errorPopup erp = new errorPopup();
-					erp.dispatchEvent(new WindowEvent(erp, WindowEvent.WINDOW_CLOSED));
+					erp.setEnabled(true);
+					erp.setErrorText(e1.toString());
+					erp.setVisible(true);
 					erp.setAlwaysOnTop(true);
-					JFrameNewMember.this.dispatchEvent(new WindowEvent(JFrameNewMember.this, WindowEvent.WINDOW_CLOSED));
-					
-					JFrameData jfd = new JFrameData();
-					jfd.dispatchEvent(new WindowEvent(jfd, WindowEvent.WINDOW_OPENED));
-					jfd.setAlwaysOnTop(true);
 				}
-				JFrameNewMember.this.dispatchEvent(new WindowEvent(JFrameNewMember.this, WindowEvent.WINDOW_CLOSED));
-				
-				JFrameData jfd = new JFrameData();
-				jfd.dispatchEvent(new WindowEvent(jfd, WindowEvent.WINDOW_OPENED));
-				jfd.setAlwaysOnTop(true);
-				
-				Success s = new Success();
-				s.dispatchEvent(new WindowEvent(s, WindowEvent.WINDOW_OPENED));
-				s.setAlwaysOnTop(true);
 			}
 		});
 		btnConfirm.setBounds(153, 196, 117, 25);

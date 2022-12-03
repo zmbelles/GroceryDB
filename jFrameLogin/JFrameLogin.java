@@ -6,13 +6,15 @@ import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import jFrameData.errorPopup;
+
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextPane;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 
 @SuppressWarnings("serial")
 public class JFrameLogin extends JFrame implements ActionListener{
@@ -79,26 +81,6 @@ public class JFrameLogin extends JFrame implements ActionListener{
 		userPane.setBounds(129, 61, 221, 21);
 		contentPane.add(userPane);
 		
-		JLabel lblError = new JLabel("Something went wrong: ");
-		lblError.setBounds(47, 210, 321, 40);
-		lblError.setVisible(false);
-		contentPane.add(lblError);
-		
-		JLabel wrongPassLbl = new JLabel("ERROR: Wrong Password");
-		wrongPassLbl.setBounds(161, 171, 207, 27);
-		wrongPassLbl.setVisible(false);
-		contentPane.add(wrongPassLbl);
-		
-		JCheckBox ORbox1 = new JCheckBox("");
-		ORbox1.setBounds(87, 8, 21, 23);
-		ORbox1.setVisible(false);
-		contentPane.add(ORbox1);
-		
-		JCheckBox ORbox2 = new JCheckBox("");
-		ORbox2.setBounds(347, 8, 21, 23);
-		ORbox2.setVisible(false);
-		contentPane.add(ORbox2);
-		
 		btnSubmit = new JButton("Submit");
 		btnSubmit.setBounds(168, 135, 117, 25);
 		btnSubmit.addActionListener(new ActionListener()
@@ -110,24 +92,26 @@ public class JFrameLogin extends JFrame implements ActionListener{
 				  String user = userPane.getText();
 				  String pass = new String(passwordField.getPassword());
 				  
+				  boolean userExists = false;
 				  try {
-					if(s.exists(user, pass)) {
-						  frame.setVisible(false);
-						  JFrameHome jfh = new JFrameHome();
-						  jfh.setVisible(true);
-					  }
-					  else {
-						  wrongPassLbl.setVisible(true);
-						  ORbox1.setVisible(true);
-						  ORbox2.setVisible(true);
-					  }
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					lblError.setText(lblError.getText() + e1);
-					lblError.setVisible(true);
-				}
+					  userExists = s.exists(user, pass);
+				  } 
+				  catch (IOException e1) {
+				  	  errorPopup error = new errorPopup();
+					  error.setEnabled(true);
+					  error.setErrorText(e1.toString());
+					  error.setVisible(true);
+					  error.setAlwaysOnTop(true);
+				  }
+			  	  if(userExists) {
+		 		      JFrameLogin.this.setEnabled(false);
+				      JFrameLogin.this.setVisible(false);
+				      JFrameHome jfh = new JFrameHome();
+				      jfh.setVisible(true);
+					  jfh.setEnabled(true);
+				  }    
 			  }
-			});
+		});
 		contentPane.add(btnSubmit);
 	}
 

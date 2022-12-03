@@ -3,6 +3,12 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -88,28 +94,30 @@ public class JFrameLogin extends JFrame implements ActionListener{
 			  @Override
 			  public void actionPerformed(ActionEvent e)
 			  {
-				  SavedUsers s = new SavedUsers();
-				  String user = userPane.getText();
-				  String pass = new String(passwordField.getPassword());
-				  
-				  boolean userExists = false;
+				  Connection conn;
 				  try {
-					  userExists = s.exists(user, pass);
-				  } 
-				  catch (IOException e1) {
-				  	  errorPopup error = new errorPopup();
-					  error.setEnabled(true);
-					  error.setErrorText(e1.toString());
-					  error.setVisible(true);
-					  error.setAlwaysOnTop(true);
-				  }
-			  	  if(userExists) {
-		 		      JFrameLogin.this.setEnabled(false);
-				      JFrameLogin.this.setVisible(false);
-				      JFrameHome jfh = new JFrameHome();
-				      jfh.setVisible(true);
-					  jfh.setEnabled(true);
-				  }    
+					  FunctionsOfJFrameHome func = new FunctionsOfJFrameHome();
+					  func.connect(1);
+					  func.connect(2);
+					conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
+					Statement stmt = conn.createStatement();
+					String getlogin = "SELECT username "
+							+ "from users"
+							+ "where username = " + txtUsername.getText() 
+							+ " && password = " + Integer.toString(txtPassword.getText().hashCode());
+					ResultSet rs = stmt.executeQuery(getlogin);
+					String tmp = rs.getString("username");
+					if(rs.wasNull()) {
+						errorPopup error = new errorPopup();
+						error.setErrorText("ERROR: WRONG USERNAME OR PASSWORD");
+						error.setEnabled(true);
+						error.setVisible(true);
+					}
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				  
 			  }
 		});
 		contentPane.add(btnSubmit);

@@ -102,7 +102,7 @@ public class Main {
 		//stack.push(addInvData);
 		
 		String addDeptData = "insert into department"
-				 + " values(1, 'Deli',     1111, 2, 3),"
+				 + " values (1, 'Deli',     1111, 2, 3),"
 					   + "(2, 'Produce',   2222, 3, 1),"
 					   + "(3, 'Butcher',   3333, 2, 5),"
 					   + "(4, 'Dairy',     4444, 2, 8),"
@@ -204,7 +204,6 @@ public class Main {
     	Connection conn;
     	boolean permission = false;
     	while(!permission) {
-    		System.out.println("%ItsKwOn%".hashCode());
     		System.out.println("Please enter your password");
     		String pass = k.next();
 			try {

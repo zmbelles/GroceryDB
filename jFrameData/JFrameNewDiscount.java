@@ -28,7 +28,8 @@ public class JFrameNewDiscount extends JFrame {
 	private JTextField txtRegPrice;
 	private JTextField txtMembersOnly;
 	private JButton btnConfirm;
-	private Stack<String> stack;
+	private Stack<String> stack = new Stack<String>();
+	private JTextField txtPID;
 	/**
 	 * Launch the application.
 	 */
@@ -45,44 +46,61 @@ public class JFrameNewDiscount extends JFrame {
 		});
 	}
 
-	public void executeQuery() throws SQLException {
-		Connection conn;
-		conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
-		Statement stmt = conn.createStatement();
+	private boolean executeQuery(Connection conn, Statement stmt){
+		try {
+			stmt = conn.createStatement();
+		} catch (SQLException e1) {
+		}
 		String addDisco = "INSERT INTO discount "
-				+ "VALUES("
-				+ stack.pop() + ", "
-				+ stack.pop() + ", "
-				+ stack.pop() + ", "
-				+ stack.pop() + ", "
+				+ "values ("
+				+ stack.pop() + ", '"
+				+ stack.pop() + "', '"
+				+ stack.pop() + "', '"
+				+ stack.pop() + "', '"
+				+ stack.pop() + "', "
 				+ stack.pop() + ", "
 				+ stack.pop() + ")";
-		stmt.execute(addDisco);
+		int test = 0;
+		try{
+			stmt.execute(addDisco);
+		}
+		//if error return false
+		catch(SQLException e){
+			return true;
+		}
+		//otherwise return true
+		return false;
 	}
 	
-	public int connect() {
+	private int connect() {
 		int errorCode = -1;
     	Connection conn;
-    	{
-			try {
-				conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
-				Statement stmt = conn.createStatement();
-				errorCode = 1;
-				int newDID;
-				String getNewDID = "Select MAX(DiscountID) "
-						+ "from discount";
-				stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(getNewDID);
-				int oldDID = Integer.parseInt(rs.getString("DiscountID"));
-				newDID = oldDID++;
-				return newDID;
-			}
-			catch(Exception e) {
-				//error code 0 = connection error
-				//error code 1 = SQLException
-				return errorCode;
-			}
-    	}
+		try {
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
+			Statement stmt = conn.createStatement();
+			int newDID=0;
+			String getNewDID = "select d1.DiscountID "
+					+ "from discount d1 "
+					+ "where d1.DiscountID = (select max(d2.DiscountID) from discount d2)";
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(getNewDID);
+			//no while since i know there's only one
+			rs.next();
+			int oldDID = Integer.parseInt(rs.getString("DiscountID"));
+			newDID = oldDID;
+			newDID++;
+			stack.push(Integer.toString(newDID));
+			boolean error = executeQuery(conn, stmt); 
+			if(error) errorCode = 1;
+			else errorCode = 0;
+		}
+		catch(Exception e) {
+			//error code -1 = connection error
+			//error code 1 = SQLException, dev @ fault
+			//error code 2 = SQLException, user @ fault
+			errorCode = 1;
+		}
+		return errorCode;
 	}
 	/**
 	 * Create the frame.
@@ -101,25 +119,25 @@ public class JFrameNewDiscount extends JFrame {
 		contentPane.add(lblAddNewDiscount);
 		
 		txtEnterSalePrice = new JTextField();
-		txtEnterSalePrice.setText("Enter sale price ($xx.xx)");
+		txtEnterSalePrice.setText("Enter sale price (xx.xx)");
 		txtEnterSalePrice.setColumns(10);
 		txtEnterSalePrice.setBounds(77, 39, 296, 19);
 		contentPane.add(txtEnterSalePrice);
 		
 		txtEnterSaleStart = new JTextField();
-		txtEnterSaleStart.setText("Enter sale start date (DD/MM/YYYY)");
+		txtEnterSaleStart.setText("Enter sale start date (YYYY-MM-DD)");
 		txtEnterSaleStart.setColumns(10);
 		txtEnterSaleStart.setBounds(77, 70, 296, 19);
 		contentPane.add(txtEnterSaleStart);
 		
 		txtSaleEndDate = new JTextField();
-		txtSaleEndDate.setText("Enter sale end date (DD/MM/YYYY)");
+		txtSaleEndDate.setText("Enter sale end date (YYYY-MM-DD)");
 		txtSaleEndDate.setColumns(10);
 		txtSaleEndDate.setBounds(77, 101, 296, 19);
 		contentPane.add(txtSaleEndDate);
 		
 		txtRegPrice = new JTextField();
-		txtRegPrice.setText("Enter regular item price ($xx.xx)");
+		txtRegPrice.setText("Enter regular item price (xx.xx)");
 		txtRegPrice.setColumns(10);
 		txtRegPrice.setBounds(77, 132, 296, 19);
 		contentPane.add(txtRegPrice);
@@ -132,22 +150,23 @@ public class JFrameNewDiscount extends JFrame {
 		
 		btnConfirm = new JButton("Confirm");
 		btnConfirm.addActionListener(new ActionListener() {
+			
+			@Override
 			public void actionPerformed(ActionEvent e) {
-				String discoID = Integer.toString(connect());
 				String price = txtEnterSalePrice.getText();
 				String start = txtEnterSaleStart.getText();
 				String end = txtSaleEndDate.getText();
 				String reg = txtRegPrice.getText();
 				String isMemOnly = txtMembersOnly.getText();
-				
+				String itemPID = txtPID.getText();
+				stack.push(itemPID);
 				stack.push(isMemOnly);
 				stack.push(reg);
 				stack.push(end);
 				stack.push(start);
 				stack.push(price);
-				stack.push(discoID);
-				try {
-					executeQuery();
+				int status = connect();
+				if(status==0) {
 					JFrameNewDiscount.this.setVisible(false);
 					JFrameNewDiscount.this.setEnabled(false);
 					
@@ -160,24 +179,25 @@ public class JFrameNewDiscount extends JFrame {
 					s.setVisible(true);
 					s.setEnabled(true);
 					s.setAlwaysOnTop(true);
-				} 
-				catch (SQLException e1) {
+				}
+				else{
 					errorPopup erp = new errorPopup();
 					erp.setEnabled(true);
+					erp.setErrorText("ERROR: Something went wrong");
 					erp.setVisible(true);
 					erp.setAlwaysOnTop(true);
-					
-					JFrameData jfd = new JFrameData();
-					jfd.setEnabled(rootPaneCheckingEnabled);
-					jfd.setVisible(false);
-					jfd.setAlwaysOnTop(true);
 				}
 				
 			}
 		});
-		btnConfirm.setBounds(157, 194, 117, 25);
+		btnConfirm.setBounds(157, 225, 117, 25);
 		contentPane.add(btnConfirm);
 		
+		txtPID = new JTextField();
+		txtPID.setText("Please enter the PID for this item");
+		txtPID.setColumns(10);
+		txtPID.setBounds(77, 195, 296, 19);
+		contentPane.add(txtPID);
+		
 	}
-
 }

@@ -20,7 +20,7 @@ import java.awt.event.ActionEvent;
 public class JFrameHome extends JFrame {
 
 	private JPanel contentPane;
-
+	JLabel lblWelcomeAdmin;
 	/**
 	 * Launch the application.
 	 */
@@ -36,7 +36,9 @@ public class JFrameHome extends JFrame {
 			}
 		});
 	}
-
+	public void setWelcomeText(String text) {
+		lblWelcomeAdmin.setText(text);;
+	}
 	/**
 	 * Create the frame.
 	 */
@@ -49,7 +51,7 @@ public class JFrameHome extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblWelcomeAdmin = new JLabel("Welcome, Admin");
+		lblWelcomeAdmin = new JLabel("Welcome, Admin");
 		lblWelcomeAdmin.setBounds(165, 12, 143, 15);
 		contentPane.add(lblWelcomeAdmin);
 		

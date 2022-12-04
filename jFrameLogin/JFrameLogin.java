@@ -2,7 +2,6 @@ package jFrameLogin;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -25,11 +24,9 @@ import javax.swing.JButton;
 @SuppressWarnings("serial")
 public class JFrameLogin extends JFrame implements ActionListener{
 	private JPanel contentPane;
-	private JTextField txtUsername;
-	private JTextField txtPassword;
-	private JPasswordField passwordField;
+	private JPasswordField txtPassword;
 	JLabel lblAcostasBarginMart;
-	JTextPane userPane;
+	JTextPane txtUsername;
 	JButton btnSubmit;
 	static JFrameLogin frame;
 
@@ -61,31 +58,17 @@ public class JFrameLogin extends JFrame implements ActionListener{
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		txtUsername = new JTextField();
-		txtUsername.setBackground(UIManager.getColor("Button.background"));
-		txtUsername.setText("Username:");
-		txtUsername.setBounds(12, 63, 80, 19);
-		contentPane.add(txtUsername);
-		txtUsername.setColumns(8);
-		
-		txtPassword = new JTextField();
-		txtPassword.setText("Password:");
-		txtPassword.setColumns(8);
-		txtPassword.setBackground(UIManager.getColor("Button.background"));
-		txtPassword.setBounds(12, 109, 80, 19);
-		contentPane.add(txtPassword);
-		
 		lblAcostasBarginMart = new JLabel("Acosta's Bargin Mart User Login");
 		lblAcostasBarginMart.setBounds(111, 12, 239, 15);
 		contentPane.add(lblAcostasBarginMart);
 		
-		passwordField = new JPasswordField();
-		passwordField.setBounds(129, 109, 221, 19);
-		contentPane.add(passwordField);
+		txtPassword = new JPasswordField();
+		txtPassword.setBounds(129, 109, 221, 19);
+		contentPane.add(txtPassword);
 		
-		userPane = new JTextPane();
-		userPane.setBounds(129, 61, 221, 21);
-		contentPane.add(userPane);
+		txtUsername = new JTextPane();
+		txtUsername.setBounds(129, 61, 221, 21);
+		contentPane.add(txtUsername);
 		
 		btnSubmit = new JButton("Submit");
 		btnSubmit.setBounds(168, 135, 117, 25);
@@ -96,31 +79,59 @@ public class JFrameLogin extends JFrame implements ActionListener{
 			  {
 				  Connection conn;
 				  try {
+					  conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
+					  Statement stmt = conn.createStatement();
 					  FunctionsOfJFrameHome func = new FunctionsOfJFrameHome();
-					  func.connect(1);
-					  func.connect(2);
-					conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
-					Statement stmt = conn.createStatement();
-					String getlogin = "SELECT username "
-							+ "from users"
-							+ "where username = " + txtUsername.getText() 
-							+ " && password = " + Integer.toString(txtPassword.getText().hashCode());
-					ResultSet rs = stmt.executeQuery(getlogin);
-					String tmp = rs.getString("username");
-					if(rs.wasNull()) {
-						errorPopup error = new errorPopup();
-						error.setErrorText("ERROR: WRONG USERNAME OR PASSWORD");
-						error.setEnabled(true);
-						error.setVisible(true);
-					}
-				} catch (SQLException e1) {
+					  int[] status = func.supplyUsers(conn, stmt);
+					  String uName = txtUsername.getText();
+					  @SuppressWarnings("deprecation")
+					  String pass = Integer.toString(txtPassword.getText().hashCode());
+					  String getlogin = "select Username, Password "
+							+ "from users "
+							+ "where Username = '" + uName
+							+ "' && Password = '" + pass + "'";
+						  
+					  try {
+						  ResultSet rs = stmt.executeQuery(getlogin);
+						  while(rs.next()) {
+							  String user = rs.getString("Username");
+							  if(rs.wasNull()) {
+								  errorPopup error = new errorPopup();
+								  error.setErrorText("ERROR: WRONG USERNAME OR PASSWORD");
+								  error.setEnabled(true);
+								  error.setVisible(true);
+							  }
+							  else { 
+								  JFrameHome home = new JFrameHome();
+								  String welcomeText = "Welcome, " + user;
+								  home.setWelcomeText(welcomeText);
+								  home.setVisible(true);
+								  home.setEnabled(true);
+								
+								  JFrameLogin.this.setEnabled(false);
+								  JFrameLogin.this.setVisible(false);
+							  }
+						  }
+					  }catch(SQLException err) {
+						  String error = err.toString();
+						  System.out.println(error);
+					  }
+				  } catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}
+				  } 
 				  
 			  }
 		});
 		contentPane.add(btnSubmit);
+		
+		JLabel lblUsername = new JLabel("Username:");
+		lblUsername.setBounds(34, 68, 85, 14);
+		contentPane.add(lblUsername);
+		
+		JLabel lblPassword = new JLabel("password:");
+		lblPassword.setBounds(34, 112, 69, 14);
+		contentPane.add(lblPassword);
 	}
 
 	@Override

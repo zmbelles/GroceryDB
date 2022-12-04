@@ -1,6 +1,7 @@
 package jFrameLogin;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Stack;
@@ -64,6 +65,7 @@ public class FunctionsOfJFrameHome {
 				+ "SSN int not null,"
 				+ "S_EID int(11) not null,"
 				+ "foreign key(S_EID) REFERENCES employee(EID))";
+		
 		stack.push(sq6);
 		int sent =0;
 		while(!stack.empty()) {
@@ -154,6 +156,29 @@ public class FunctionsOfJFrameHome {
 			System.out.println("Statement: " + sent + " has finished");
 			sent++;
 		}
+	}
+	public int[] supplyUsers(Connection conn, Statement stmt){
+		int[] status = {0,0};
+		String createUserTable = "create table users "
+				   + "(Username varchar(10) primary key not null,"
+				   + "Password varchar(20) not null)";
+		try {
+			stmt.execute(createUserTable);
+		} catch (SQLException e) {
+			status[0] = 1;
+		}
+		String addUsers = "INSERT INTO users"
+				+ "	VALUES ('dAcosta1', '1576637834'),"
+				+ "('TLe53',     '79938635'),"
+				+ "('Admin',     '63116079'),"
+				+ "('zBelles22', '1216985755'),"
+				+ "('dKwon18',   '-838717289')";
+		try {
+			stmt.execute(addUsers);
+		} catch (SQLException e) {
+			status[1]=1;
+		}
+		return status;
 	}
 	
 /*################################CONNECTING TO DATABASE############################################*/

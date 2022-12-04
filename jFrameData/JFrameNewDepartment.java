@@ -24,7 +24,7 @@ public class JFrameNewDepartment extends JFrame {
 	private JTextField txtDepartmentExtention;
 	private JTextField txtEmployees;
 	private JTextField txtManagerEID;
-	private Stack<String> stack;
+	private Stack<String> stack = new Stack<String>();
 
 	/**
 	 * Launch the application.
@@ -42,43 +42,54 @@ public class JFrameNewDepartment extends JFrame {
 		});
 	}
 
-	public void executeQuery() throws SQLException {
-		Connection conn;
-		conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
-		Statement stmt = conn.createStatement();
-		String addDisco = "INSERT INTO discount "
-				+ "VALUES("
-				+ stack.pop() + ", "
-				+ stack.pop() + ", "
-				+ stack.pop() + ", "
-				+ stack.pop() + ", "
-				+ stack.pop() + ")";
-		stmt.execute(addDisco);
+	private boolean executeQuery(Connection conn, Statement stmt){
+		String addDept = "INSERT INTO department "
+				+ "values ("
+				+ Integer.parseInt(stack.pop()) + ", '"
+				+ stack.pop() + "', "
+				+ Integer.parseInt(stack.pop()) + ", "
+				+ Integer.parseInt(stack.pop()) + ", "
+				+ Integer.parseInt(stack.pop()) + ")";
+		try{
+			stmt.execute(addDept);
+		}
+		//if error return true
+		catch(SQLException e){
+			return true;
+		}
+		//otherwise return false
+		return false;
 	}
 	
-	public int connect() {
+	private int connect() {
 		int errorCode = -1;
     	Connection conn;
-    	{
-			try {
-				conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
-				Statement stmt = conn.createStatement();
-				errorCode = 1;
-				int newDID;
-				String getNewDID = "Select MAX(DiscountID) "
-						+ "from discount";
-				stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(getNewDID);
-				int oldDID = Integer.parseInt(rs.getString("DiscountID"));
-				newDID = oldDID++;
-				return newDID;
-			}
-			catch(Exception e) {
-				//error code 0 = connection error
-				//error code 1 = SQLException
-				return errorCode;
-			}
-    	}
+		try {
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
+			Statement stmt = conn.createStatement();
+			int newDID=0;
+			String getNewDID = "select d1.DID "
+					+ "from department d1 "
+					+ "where d1.DID = (select max(d2.DID) from department d2)";
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(getNewDID);
+			//no while since i know there's only one
+			rs.next();
+			int oldDID = Integer.parseInt(rs.getString("DID"));
+			newDID = oldDID;
+			newDID++;
+			stack.push(Integer.toString(newDID));
+			boolean error = executeQuery(conn, stmt); 
+			if(error) errorCode = 1;
+			else errorCode = 0;
+		}
+		catch(Exception e) {
+			//error code -1 = connection error
+			//error code 1 = SQLException, dev @ fault
+			//error code 2 = SQLException, user @ fault
+			errorCode = 1;
+		}
+		return errorCode;
 	}
 	/**
 	 * Create the frame.
@@ -122,6 +133,7 @@ public class JFrameNewDepartment extends JFrame {
 		
 		JButton btnNewButton = new JButton("Confirm");
 		btnNewButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				String deptName = txtDepartmentName.getText();
 				String ext = txtDepartmentExtention.getText();
@@ -138,7 +150,6 @@ public class JFrameNewDepartment extends JFrame {
 					JFrameData data = new JFrameData();
 					data.setEnabled(true);
 					data.setVisible(true);
-					data.setAlwaysOnTop(true);
 					
 					Success succ = new Success();
 					succ.setVisible(true);
@@ -147,10 +158,10 @@ public class JFrameNewDepartment extends JFrame {
 					
 					JFrameNewDepartment.this.setEnabled(false);
 					JFrameNewDepartment.this.setVisible(false);
-					JFrameNewDepartment.this.setAlwaysOnTop(false);
 				}
 				else {
 					errorPopup error = new errorPopup();
+					error.setErrorText("ERROR: Something went wrong");
 					error.setEnabled(true);
 					error.setVisible(true);
 					error.setAlwaysOnTop(true);

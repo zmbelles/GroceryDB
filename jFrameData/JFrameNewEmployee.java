@@ -26,10 +26,9 @@ public class JFrameNewEmployee extends JFrame {
 	private JTextField txtEmpSal;
 	private JTextField txtEmpDOB;
 	private JTextField txtEmpSSN;
-	private Stack<String> stack;
 	private JTextField txtEmpDept;
 	private JButton btnConfirm_1;
-
+	private Stack<String> stack = new Stack<String>();
 	/**
 	 * Launch the application.
 	 */
@@ -45,44 +44,82 @@ public class JFrameNewEmployee extends JFrame {
 			}
 		});
 	}
-	public void executeQuery() throws SQLException {
+	private boolean addMgrID(){
+		int mgrID=0;
 		Connection conn;
-		conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
-		Statement stmt = conn.createStatement();
+		try {
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
+			Statement stmt = conn.createStatement();
+			String getID = "select distinct S_EID "
+					+ "from employee "
+					+ "where Department_DID = " 
+					+ stack.pop();
+			
+			ResultSet rs = stmt.executeQuery(getID);
+			rs.next();
+			stack.push(rs.getString("S_EID"));
+			return true;
+				
+		} 
+		catch (SQLException e1) {return false;}
+		
+	}
+	private boolean executeQuery(Connection conn, Statement stmt){
+		try {
+			stmt = conn.createStatement();
+		} catch (SQLException e1) {
+		}
 		String addEmp = "INSERT INTO employee "
-				+ "VALUES("
+				+ "VALUES ("
+				+ stack.pop() + ", '"
+				+ stack.pop() + "', '"
+				+ stack.pop() + "', "
 				+ stack.pop() + ", "
-				+ stack.pop() + ", "
-				+ stack.pop() + ", "
-				+ stack.pop() + ", "
-				+ stack.pop() + ", "
+				+ stack.pop() + ", '"
+				+ stack.pop() + "', "
 				+ stack.pop() + ", "
 				+ stack.pop() + ")";
-		stmt.execute(addEmp);
+		int n=5;
+		n++;
+		try{
+			stmt.execute(addEmp);
+		}
+		//if error return true
+		catch(SQLException e){
+			return true;
+		}
+		//otherwise return false
+		return false;
 	}
-	public int connect() {
+	private int connect() {
 		int errorCode = -1;
     	Connection conn;
-    	{
-			try {
-				conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
-				Statement stmt = conn.createStatement();
-				errorCode = 1;
-				int newEmpNum;
-				String getNewEmpNum = "Select MAX(EID) "
-						+ "from employee";
-				ResultSet rs = stmt.executeQuery(getNewEmpNum);
-				int oldEmpNum = Integer.parseInt(rs.getString("EID"));
-				newEmpNum = oldEmpNum++;
-				return newEmpNum;
-				
-			}
-			catch(Exception e) {
-				//error code 0 = connection error
-				//error code 1 = SQLException
-				return errorCode;
-			}
-    	}
+		try {
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
+			Statement stmt = conn.createStatement();
+			int newEID=0;
+			String getOldEID = "select e1.EID "
+					+ "from employee e1 "
+					+ "where e1.EID = (select max(e2.EID) from employee e2)";
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(getOldEID);
+			//no while since i know there's only one
+			rs.next();
+			int oldDID = Integer.parseInt(rs.getString("EID"));
+			newEID = oldDID;
+			newEID++;
+			stack.push(Integer.toString(newEID));
+			boolean error = executeQuery(conn, stmt); 
+			if(error) errorCode = 1;
+			else errorCode = 0;
+			
+		}
+		catch(Exception e) {
+			//error code 0 = connection error
+			//error code 1 = SQLException
+			return errorCode;
+		}
+		return errorCode;
 	}
 	/**
 	 * Create the frame.
@@ -131,45 +168,54 @@ public class JFrameNewEmployee extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Stack<String> stack = new Stack<String>();
 				String empSSN = txtEmpSSN.getText();
 				String empDOB = txtEmpDOB.getText();
 				String empSal = txtEmpDOB.getText();
 				String empDept = txtEmpDept.getText();
 				String empLName = txtEmpLName.getText();
 				String empFName = txtEmpFName.getText();
-				String newEmpNum = Integer.toString(connect());
-				
-				stack.push(empSSN);
-				stack.push(empDOB);
-				stack.push(empSal);
 				stack.push(empDept);
-				stack.push(empLName);
-				stack.push(empFName);
-				stack.push(newEmpNum);
-				
-				try {
-					executeQuery();
-					JFrameNewEmployee.this.setEnabled(false);
-					JFrameNewEmployee.this.setVisible(false);
-					
-					JFrameData jfd = new JFrameData();
-					jfd.setEnabled(true);
-					jfd.setVisible(true);
-					jfd.setAlwaysOnTop(true);
-					
-					Success s = new Success();
-					s.setEnabled(true);
-					s.setVisible(true);
-					s.setAlwaysOnTop(true);
-				} catch (SQLException e1) {
-					errorPopup error = new errorPopup();
-					error.setEnabled(true);
-					error.setErrorText(e1.toString());
-					error.setVisible(true);
-					error.setAlwaysOnTop(true);
+				boolean added = addMgrID();
+				if(added) {
+					stack.push(empSSN);
+					stack.push(empDOB);
+					stack.push(empSal);
+					stack.push(empDept);
+					stack.push(empLName);
+					stack.push(empFName);
+					int status = connect();
+					if(status==0) {
+						//close this window
+						JFrameNewEmployee.this.setVisible(false);
+						JFrameNewEmployee.this.setEnabled(false);
+						
+						//open data window
+						JFrameData jfd = new JFrameData();
+						jfd.setVisible(true);
+						jfd.setEnabled(true);
+						jfd.setAlwaysOnTop(true);
+						
+						//enable success popup
+						Success s = new Success();
+						s.setVisible(true);
+						s.setEnabled(true);
+						s.setAlwaysOnTop(true);
+					}
+					else{
+						errorPopup erp = new errorPopup();
+						erp.setEnabled(true);
+						erp.setErrorText("Something went wrong");
+						erp.setVisible(true);
+						erp.setAlwaysOnTop(true);
+					}
 				}
-				
+				else{
+					errorPopup erp = new errorPopup();
+					erp.setEnabled(true);
+					erp.setErrorText("Something went wrong");
+					erp.setVisible(true);
+					erp.setAlwaysOnTop(true);
+				}
 			}
 		});
 		
@@ -191,11 +237,10 @@ public class JFrameNewEmployee extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				JFrameNewEmployee.this.setEnabled(false);
 				JFrameNewEmployee.this.setVisible(false);
-				JFrameData data = new JFrameData();
 				
+				JFrameData data = new JFrameData();
 				data.setEnabled(true);
 				data.setVisible(true);
-				data.setAlwaysOnTop(true);
 			}
 		});
 		btnConfirm_1.setBounds(81, 225, 117, 25);

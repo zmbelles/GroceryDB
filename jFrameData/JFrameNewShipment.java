@@ -21,12 +21,14 @@ import java.awt.event.ActionEvent;
 @SuppressWarnings("serial")
 public class JFrameNewShipment extends JFrame {
 
-	private Stack<String> stack;
+	private Stack<String> stack = new Stack<String>();
 	private JPanel contentPane;
 	private JTextField txtOrderId;
 	private JTextField txtQtyOnOrder;
 	private JTextField txtQtyInTransit;
 	private JTextField txtArrivalDate;
+	private JButton btnBack;
+	private JTextField txtPID;
 
 	/**
 	 * Launch the application.
@@ -44,20 +46,23 @@ public class JFrameNewShipment extends JFrame {
 		});
 	}
 	
-	public void executeQuery() throws SQLException {
-		Connection conn;
-		conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
-		Statement stmt = conn.createStatement();
-		String addShip = "INSERT INTO shipment "
+	private boolean executeQuery(Connection conn, Statement stmt){
+		String addShip = "INSERT INTO shipment_status "
 				+ "VALUES("
 				+ stack.pop() + ", "
 				+ stack.pop() + ", "
-				+ stack.pop() + ", "
+				+ stack.pop() + ", '"
+				+ stack.pop() + "', "
 				+ stack.pop() + ")";
-		stmt.execute(addShip);
+		try {
+			stmt.execute(addShip);
+			return false;
+		} catch (SQLException e) {
+			return true;
+		}
 	}
 	
-	public int connect() {
+	private int connect() {
 		int errorCode = -1;
     	Connection conn;
     	{
@@ -65,14 +70,10 @@ public class JFrameNewShipment extends JFrame {
 				conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
 				Statement stmt = conn.createStatement();
 				errorCode = 1;
-				int newSID;
-				String getNewSID = "Select MAX(OrderID) "
-						+ "from shipment";
-				stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(getNewSID);
-				int oldSID = Integer.parseInt(rs.getString("OrderID"));
-				newSID = oldSID++;
-				return newSID;
+				boolean error = executeQuery(conn, stmt); 
+				if(error) errorCode = 1;
+				else errorCode = 0;
+				return errorCode;
 			}
 			catch(Exception e) {
 				//error code 0 = connection error
@@ -130,35 +131,61 @@ public class JFrameNewShipment extends JFrame {
 				String orderQty = txtQtyOnOrder.getText();
 				String transitQty = txtQtyInTransit.getText();
 				String arrivalDate = txtArrivalDate.getText();
-				
+				String PID = txtPID.getText();
+				stack.push(PID);
 				stack.push(arrivalDate);
 				stack.push(transitQty);
 				stack.push(orderQty);
 				stack.push(OID);
-				
-				try {
-					executeQuery();
-					JFrameNewShipment.this.setEnabled(false);
+				int status = connect();
+				if(status==0) {
+					//close this window
 					JFrameNewShipment.this.setVisible(false);
-					JFrameData jfd = new JFrameData();
-					jfd.setEnabled(true);
-					jfd.setVisible(true);
-					jfd.setAlwaysOnTop(true);
+					JFrameNewShipment.this.setEnabled(false);
 					
+					//open data window
+					JFrameData jfd = new JFrameData();
+					jfd.setVisible(true);
+					jfd.setEnabled(true);
+					
+					//enable success popup
 					Success s = new Success();
-					s.setEnabled(true);
 					s.setVisible(true);
+					s.setEnabled(true);
 					s.setAlwaysOnTop(true);
-				} catch (SQLException e1) {
+				}
+				else{
 					errorPopup erp = new errorPopup();
 					erp.setEnabled(true);
-					erp.setErrorText(e1.toString());
+					erp.setErrorText("Something went wrong");
 					erp.setVisible(true);
 					erp.setAlwaysOnTop(true);
 				}
 			}
 		});
-		btnConfirm.setBounds(150, 163, 117, 25);
+		btnConfirm.setBounds(223, 191, 117, 25);
 		contentPane.add(btnConfirm);
+		
+		btnBack = new JButton("Back");
+		btnBack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFrameNewShipment.this.setVisible(false);
+				JFrameNewShipment.this.setEnabled(false);
+				
+				//open data window
+				JFrameData jfd = new JFrameData();
+				jfd.setVisible(true);
+				jfd.setEnabled(true);
+				jfd.setAlwaysOnTop(true);
+			}
+		});
+		btnBack.setBounds(90, 191, 117, 25);
+		contentPane.add(btnBack);
+		
+		txtPID = new JTextField();
+		txtPID.setText("Enter item Product ID");
+		txtPID.setColumns(10);
+		txtPID.setBounds(62, 161, 296, 19);
+		contentPane.add(txtPID);
 	}
 }

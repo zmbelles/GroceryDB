@@ -129,6 +129,20 @@ public class JFrameHome extends JFrame {
 		txtpnAcostasWeGuarentee.setText("Acosta's, \"We Guarentee nothing... but freshness\"");
 		txtpnAcostasWeGuarentee.setBounds(48, 195, 341, 21);
 		contentPane.add(txtpnAcostasWeGuarentee);
+		
+		JButton btnlogOut = new JButton("Log Out");
+		btnlogOut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFrameHome.this.setVisible(false);
+				JFrameHome.this.setEnabled(false);
+				
+				JFrameLogin login = new JFrameLogin();
+				login.setVisible(true);
+				login.setEnabled(true);
+			}
+		});
+		btnlogOut.setBounds(144, 143, 164, 25);
+		contentPane.add(btnlogOut);
 	}
 
 }

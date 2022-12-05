@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Stack;
 import java.awt.event.ActionEvent;
+import javax.swing.JRadioButton;
 
 @SuppressWarnings("serial")
 public class JFrameNewMember extends JFrame {
@@ -27,7 +28,7 @@ public class JFrameNewMember extends JFrame {
 	private JTextField txtDOB;
 	private JTextField txtOptIn;
 	private JTextField txtEmail;
-	private Stack<String> stack;
+	private Stack<String> stack = new Stack<String>();
 
 	/**
 	 * Launch the application.
@@ -44,36 +45,70 @@ public class JFrameNewMember extends JFrame {
 			}
 		});
 	}
-
-	public void executeQuery() throws SQLException {
+	private String getEID() throws SQLException{
+		String FName = txtFName.getText();
+		String LName = txtLName.getText();
+		String query = "select EID "
+				+ "from employee "
+				+ "where FName LIKE '"
+				+ FName 
+				+ "' && LName LIKE '"
+				+ LName
+				+ "'";
 		Connection conn;
 		conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
 		Statement stmt = conn.createStatement();
-		String addEmp = "INSERT INTO inventory "
+		ResultSet rs = stmt.executeQuery(query);
+		rs.next();
+		try {
+			String EID = rs.getString("EID");
+			return EID;
+		}
+		catch(SQLException e) {
+			if(e.toString().contains("Illegal operation on empty result set")) return "NULL";
+			else return "err";
+		}
+	}
+	private boolean executeQuery(Connection conn, Statement stmt){
+		
+		String addMem = "INSERT INTO members "
 				+ "VALUES("
-				+ stack.pop() + ", "
-				+ stack.pop() + ", "
-				+ stack.pop() + ", "
+				+ stack.pop() + ", '"
+				+ stack.pop() + "', '"
+				+ stack.pop() + "', '"
+				+ stack.pop() + "', "
+				+ stack.pop() + ", '"
+				+ stack.pop() + "', "
 				+ stack.pop() + ")";
-		stmt.execute(addEmp);
+		try {
+			stmt.execute(addMem);
+			return false;
+		} catch (SQLException e) {
+			return true;
+		}
 	}
 	
-	public int connect() {
+	private int connect() {
 		int errorCode = -1;
     	Connection conn;
     	{
 			try {
 				conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
 				Statement stmt = conn.createStatement();
-				errorCode = 1;
 				int newMID;
-				String getNewMID = "Select MAX(MID) "
-						+ "from members";
-				stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(getNewMID);
-				int oldMID = Integer.parseInt(rs.getString("PID"));
-				newMID = oldMID++;
-				return newMID;
+				String getOldMID = "select m1.MID "
+						+ "from members m1 "
+						+ "where m1.MID = (select max(m2.MID) from members m2)";
+				ResultSet rs = stmt.executeQuery(getOldMID);
+				rs.next();
+				int oldMID = Integer.parseInt(rs.getString("MID"));
+				newMID = oldMID;
+				newMID++;
+				stack.push(Integer.toString(newMID));
+				boolean error = executeQuery(conn, stmt); 
+				if(error) errorCode = 1;
+				else errorCode = 0;
+				return errorCode;
 			}
 			catch(Exception e) {
 				//error code 0 = connection error
@@ -95,8 +130,24 @@ public class JFrameNewMember extends JFrame {
 		contentPane.setLayout(null);
 		
 		JLabel lblAddNewMember = new JLabel("Add New Member");
-		lblAddNewMember.setBounds(141, 12, 164, 15);
+		lblAddNewMember.setBounds(173, 11, 164, 15);
 		contentPane.add(lblAddNewMember);
+		
+		JButton btnBack = new JButton("Back");
+		btnBack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFrameNewMember.this.setVisible(false);
+				JFrameNewMember.this.setEnabled(false);
+				
+				//open data window
+				JFrameData jfd = new JFrameData();
+				jfd.setVisible(true);
+				jfd.setEnabled(true);
+				jfd.setAlwaysOnTop(true);
+			}
+		});
+		btnBack.setBounds(100, 225, 117, 25);
+		contentPane.add(btnBack);
 		
 		txtFName = new JTextField();
 		txtFName.setText("Enter member first name here");
@@ -136,32 +187,74 @@ public class JFrameNewMember extends JFrame {
 				String DOB = txtDOB.getText();
 				String optIn = txtOptIn.getText();
 				String email = txtEmail.getText();
-				String MID = Integer.toString(connect());
-				stack.push(email);
-				stack.push(optIn);
-				stack.push(DOB);
-				stack.push(lName);
-				stack.push(fName);
-				stack.push(MID);
+				
 				try {
-					executeQuery();
-					JFrameNewMember.this.setEnabled(false);
-					JFrameNewMember.this.setVisible(false);
-					JFrameData jfd = new JFrameData();
-					jfd.setEnabled(true);
-					jfd.setVisible(true);
-					jfd.setAlwaysOnTop(true);
-				} catch (SQLException e1) {
+					String EID = getEID();
+					//if there's an error, prompt error popup
+					if(EID!="err") {
+						
+						//check if there's no EID found
+						if(EID=="NULL") {
+							stack.push("null");
+						}
+						else {
+							stack.push(EID);
+						}
+						//this will need to run regardless
+						stack.push(email);
+						stack.push(optIn);
+						stack.push(DOB);
+						stack.push(lName);
+						stack.push(fName);
+						int status = connect();
+						if(status==0) {
+							//close this window
+							JFrameNewMember.this.setVisible(false);
+							JFrameNewMember.this.setEnabled(false);
+							
+							//open data window
+							JFrameData jfd = new JFrameData();
+							jfd.setVisible(true);
+							jfd.setEnabled(true);
+							jfd.setAlwaysOnTop(true);
+							
+							//enable success popup
+							Success s = new Success();
+							s.setVisible(true);
+							s.setEnabled(true);
+							s.setAlwaysOnTop(true);
+						}
+						else{
+							errorPopup erp = new errorPopup();
+							erp.setEnabled(true);
+							erp.setErrorText("Something went wrong");
+							erp.setVisible(true);
+							erp.setAlwaysOnTop(true);
+						}
+						
+					}
+					else{
+						errorPopup erp = new errorPopup();
+						erp.setEnabled(true);
+						erp.setErrorText("Something went wrong adding EID");
+						erp.setVisible(true);
+						erp.setAlwaysOnTop(true);
+					}
+					
+					
+				} 
+				catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 					errorPopup erp = new errorPopup();
 					erp.setEnabled(true);
-					erp.setErrorText(e1.toString());
+					erp.setErrorText("Something went wrong adding EID");
 					erp.setVisible(true);
 					erp.setAlwaysOnTop(true);
 				}
 			}
 		});
-		btnConfirm.setBounds(153, 196, 117, 25);
+		btnConfirm.setBounds(243, 225, 117, 25);
 		contentPane.add(btnConfirm);
 	}
-
 }

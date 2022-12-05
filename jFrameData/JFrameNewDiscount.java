@@ -60,16 +60,16 @@ public class JFrameNewDiscount extends JFrame {
 				+ stack.pop() + "', "
 				+ stack.pop() + ", "
 				+ stack.pop() + ")";
-		int test = 0;
 		try{
 			stmt.execute(addDisco);
+			return false;
 		}
-		//if error return false
+		//if error return true
 		catch(SQLException e){
 			return true;
 		}
-		//otherwise return true
-		return false;
+		//otherwise return false
+		
 	}
 	
 	private int connect() {
@@ -79,11 +79,11 @@ public class JFrameNewDiscount extends JFrame {
 			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
 			Statement stmt = conn.createStatement();
 			int newDID=0;
-			String getNewDID = "select d1.DiscountID "
+			String getOldDID = "select d1.DiscountID "
 					+ "from discount d1 "
 					+ "where d1.DiscountID = (select max(d2.DiscountID) from discount d2)";
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(getNewDID);
+			ResultSet rs = stmt.executeQuery(getOldDID);
 			//no while since i know there's only one
 			rs.next();
 			int oldDID = Integer.parseInt(rs.getString("DiscountID"));
@@ -167,14 +167,17 @@ public class JFrameNewDiscount extends JFrame {
 				stack.push(price);
 				int status = connect();
 				if(status==0) {
+					//close this window
 					JFrameNewDiscount.this.setVisible(false);
 					JFrameNewDiscount.this.setEnabled(false);
 					
+					//open data window
 					JFrameData jfd = new JFrameData();
 					jfd.setVisible(true);
 					jfd.setEnabled(true);
 					jfd.setAlwaysOnTop(true);
 					
+					//enable success popup
 					Success s = new Success();
 					s.setVisible(true);
 					s.setEnabled(true);
@@ -183,7 +186,7 @@ public class JFrameNewDiscount extends JFrame {
 				else{
 					errorPopup erp = new errorPopup();
 					erp.setEnabled(true);
-					erp.setErrorText("ERROR: Something went wrong");
+					erp.setErrorText("Something went wrong");
 					erp.setVisible(true);
 					erp.setAlwaysOnTop(true);
 				}

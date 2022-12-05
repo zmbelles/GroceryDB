@@ -25,7 +25,8 @@ public class JFrameNewInventory extends JFrame {
 	private JTextField txtProductName;
 	private JTextField txtProductPrice;
 	private JTextField txtProductQty;
-	private Stack<String> stack;
+	private Stack<String> stack = new Stack<String>();
+	private JTextField txtDept;
 	/**
 	 * Launch the application.
 	 */
@@ -42,39 +43,52 @@ public class JFrameNewInventory extends JFrame {
 		});
 	}
 	
-	public void executeQuery() throws SQLException {
-		Connection conn;
-		conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
-		Statement stmt = conn.createStatement();
+	private boolean executeQuery(Connection conn, Statement stmt) {
+		
 		String addEmp = "INSERT INTO inventory "
-				+ "VALUES("
-				+ stack.pop() + ", "
+				+ "VALUES ("
+				+ stack.pop() + ", '"
+				+ stack.pop() + "', "
 				+ stack.pop() + ", "
 				+ stack.pop() + ", "
 				+ stack.pop() + ")";
-		stmt.execute(addEmp);
+		try {
+			stmt.execute(addEmp);
+			return false;
+		}
+		//if error return true
+		catch (SQLException e) {
+			return true;
+		}
 	}
 	
-	public int connect() {
+	private int connect() {
 		int errorCode = -1;
     	Connection conn;
     	{
 			try {
 				conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/term", "root", "!Fall2022");
 				Statement stmt = conn.createStatement();
-				errorCode = 1;
 				int newPID;
-				String getNewEmpNum = "Select MAX(PID) "
-						+ "from inventory";
+				String getOldEmpNum = "select i1.PID "
+						+ "from inventory i1 "
+						+ "where i1.PID = (select max(i2.PID) from inventory i2)";
 				stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(getNewEmpNum);
+				ResultSet rs = stmt.executeQuery(getOldEmpNum);
+				rs.next();
 				int oldPID = Integer.parseInt(rs.getString("PID"));
-				newPID = oldPID++;
-				return newPID;
+				newPID = oldPID;
+				newPID++;
+				stack.push(Integer.toString(newPID));
+				boolean error = executeQuery(conn, stmt); 
+				if(error) errorCode = 1;
+				else errorCode = 0;
+				return errorCode;
 			}
 			catch(Exception e) {
 				//error code 0 = connection error
 				//error code 1 = SQLException
+				errorCode = 1;
 				return errorCode;
 			}
     	}
@@ -98,7 +112,7 @@ public class JFrameNewInventory extends JFrame {
 		txtProductName = new JTextField();
 		txtProductName.setText("Enter product name here");
 		txtProductName.setColumns(10);
-		txtProductName.setBounds(89, 72, 262, 37);
+		txtProductName.setBounds(89, 38, 262, 37);
 		contentPane.add(txtProductName);
 		
 		txtProductPrice = new JTextField();
@@ -110,7 +124,7 @@ public class JFrameNewInventory extends JFrame {
 		txtProductQty = new JTextField();
 		txtProductQty.setText("Enter product quantity here");
 		txtProductQty.setColumns(10);
-		txtProductQty.setBounds(89, 172, 262, 37);
+		txtProductQty.setBounds(89, 165, 262, 37);
 		contentPane.add(txtProductQty);
 		
 		JButton btnConfirm = new JButton("Confirm");
@@ -119,34 +133,62 @@ public class JFrameNewInventory extends JFrame {
 				String productName = txtProductName.getText();
 				String productPrice = txtProductPrice.getText();
 				String productQty = txtProductQty.getText();
-				String PID = Integer.toString(connect());
-				stack.push(productName);
-				stack.push(productPrice);
+				String deptID = txtDept.getText();
 				stack.push(productQty);
-				stack.push(PID);
-				try {
-					executeQuery();
-					JFrameNewInventory.this.setEnabled(false);
+				stack.push(productPrice);
+				stack.push(deptID);
+				stack.push(productName);
+				
+				int status = connect();
+				if(status==0) {
+					//close this window
 					JFrameNewInventory.this.setVisible(false);
+					JFrameNewInventory.this.setEnabled(false);
+					
+					//open data window
 					JFrameData jfd = new JFrameData();
-					jfd.setEnabled(true);
 					jfd.setVisible(true);
+					jfd.setEnabled(true);
 					jfd.setAlwaysOnTop(true);
 					
+					//enable success popup
 					Success s = new Success();
-					s.setEnabled(true);
 					s.setVisible(true);
+					s.setEnabled(true);
 					s.setAlwaysOnTop(true);
-				} catch (SQLException e1) {
+				}
+				else{
 					errorPopup erp = new errorPopup();
 					erp.setEnabled(true);
-					erp.setErrorText(e1.toString());
+					erp.setErrorText("Something went wrong");
 					erp.setVisible(true);
 					erp.setAlwaysOnTop(true);
 				}
 			}
 		});
-		btnConfirm.setBounds(201, 220, 117, 25);
+		btnConfirm.setBounds(230, 220, 117, 25);
 		contentPane.add(btnConfirm);
+		
+		txtDept = new JTextField();
+		txtDept.setText("Enter Department ID here");
+		txtDept.setColumns(10);
+		txtDept.setBounds(89, 80, 262, 37);
+		contentPane.add(txtDept);
+		
+		JButton btnBack = new JButton("Back");
+		btnBack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFrameNewInventory.this.setVisible(false);
+				JFrameNewInventory.this.setEnabled(false);
+				
+				//open data window
+				JFrameData jfd = new JFrameData();
+				jfd.setVisible(true);
+				jfd.setEnabled(true);
+				jfd.setAlwaysOnTop(true);
+			}
+		});
+		btnBack.setBounds(100, 221, 117, 25);
+		contentPane.add(btnBack);
 	}
 }

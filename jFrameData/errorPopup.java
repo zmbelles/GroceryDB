@@ -37,7 +37,7 @@ public class errorPopup extends JDialog {
 	 * Create the dialog.
 	 */
 	public errorPopup() {
-		setBounds(100, 100, 435, 188);
+		setBounds(100, 100, 674, 301);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(new Color(255, 255, 255));
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -46,7 +46,7 @@ public class errorPopup extends JDialog {
 		
 		lblErrorUnableTo = new JLabel("ERROR: UNABLE TO CONNECT TO DATABASE");
 		lblErrorUnableTo.setFont(new Font("DialogInput", Font.BOLD, 10));
-		lblErrorUnableTo.setBounds(26, 24, 383, 81);
+		lblErrorUnableTo.setBounds(26, 24, 622, 81);
 		contentPanel.add(lblErrorUnableTo);
 		JButton btnOk = new JButton("OK");
 		btnOk.addActionListener(new ActionListener() {

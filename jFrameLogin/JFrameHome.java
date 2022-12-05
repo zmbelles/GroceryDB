@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import jFrameData.JFrameData;
+import jFrameData.JFrameQueryDisplay;
 import jFrameData.Success;
 import jFrameData.errorPopup;
 
@@ -104,6 +105,16 @@ public class JFrameHome extends JFrame {
 		contentPane.add(btnAddLegacyData);
 		
 		JButton btnPerform = new JButton("Perform Queries");
+		btnPerform.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFrameHome.this.setVisible(false);
+				JFrameHome.this.setEnabled(false);
+				
+				JFrameQueryDisplay query = new JFrameQueryDisplay();
+				query.setVisible(true);
+				query.setEnabled(true);
+			}
+		});
 		btnPerform.setBounds(257, 39, 164, 25);
 		contentPane.add(btnPerform);
 		

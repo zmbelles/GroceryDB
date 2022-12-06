@@ -256,11 +256,13 @@ public class Main {
 				break;
 			case 6:
 	//			#1)birthday calculator
-				String sql6 = "select concat(FName, ' ', LName) as member_name, MID as member_id,"
-						+ " DOB as members_birthday,"
-						+ " curdate() as current_date,"
+				String sql6 = "select concat(FName, ' ', LName) as 'Member_Name',"
+						+ " MID as 'Member_ID',"
+						+ " DOB as 'Members_Birthday',"
+						+ " curdate() as 'Current_Date',"
 						+ " datediff(curdate(), DOB) as days_alive"
-						+ " from members where DOB < '2000-01-01'";
+						+ " from members"
+						+ " where DOB < '2000-01-01'";
 				ResultSet rs6 = stmt.executeQuery(sql6);
 				
 				while(rs6.next()) {
@@ -311,21 +313,21 @@ public class Main {
 			}
 				break;
 			case 9:
-	//			#4)Using Views, calculate the net amount of all product in store and item on order combined
-				String sql9 = "create or replace view net_product_summary"
-						+ " as select PName as product_name, concat('$',sum(price*(QTY + Qty_on_order))) as net_amount"
-						+ " from inventory join shipment_status using(PID) group by PID";
-				ResultSet rs9 = stmt.executeQuery(sql9);
-				
-				while(rs9.next()) {
-					String PartName = rs9.getString("PName");
-					String Net_amount = rs9.getString("net_amount");
-					System.out.println("Part Name: " + PartName + "\n"
-							+ "Net Amount: " + Net_amount + "\n");
-				}
-				break;
+//	            #4) Calculate the net amount of all product in store and item on order combined
+	            String sql9 = "select PName as product_name, "
+	            		+ "concat('$',sum(price*(QTY + Qty_on_order))) as net_amount"
+	                    + " from inventory join shipment_status using(PID) group by PID";
+	            ResultSet rs9 = stmt.executeQuery(sql9);
+	            
+	            while(rs9.next()) {
+	                String PartName = rs9.getString("product_name");
+	                String Net_amount = rs9.getString("net_amount");
+	                System.out.println("Part Name: " + PartName + "\n"
+	                        + "Net Amount: " + Net_amount + "\n");
+	            }
+	            break;
 			default:
-				System.out.println("Something went wrong");
+				return true;
 			}
 			return false;
 		}
@@ -369,7 +371,7 @@ public class Main {
 					boolean finished = false;
 					do {
 						System.out.println("Which query would you like to run?");
-						System.out.println("Please enter a number between 1 and 9 or 10 to do them all at once");
+						System.out.println("Please enter a number between 1 and 9");
 						int queryNum = k.nextInt();
 						error = performQueries(stmt, queryNum, conn);
 						if(error) {
@@ -389,8 +391,9 @@ public class Main {
 				}
 			}
 			catch(Exception e) {
-				
-				System.out.println("Error: " + e);
+				if(e.toString().contains("already exists")) {
+					System.out.println("Liar");
+				}
 			}
     	}
     	permission = false;

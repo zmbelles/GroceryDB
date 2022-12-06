@@ -3,6 +3,8 @@ import java.util.Scanner;
 import java.util.Stack;
 import java.util.Vector;
 
+import jFrameData.errorPopup;
+
 public class Main {
 
 	public static void tableCreation(Statement stmt) throws SQLException {
@@ -158,46 +160,179 @@ public class Main {
 	}
 	
 	/*###############################SQL QUERIES OF EACH GROUP MEMBER###########################################*/
-	public static boolean performQueries(Statement stmt, int qNum) throws SQLException {
-		boolean ran = true;
-		if(qNum == 1) {
-			//TODO: DAN'S QUERIES
-		}
-		else if(qNum == 2) {
-			//TODO: ZACH'S QUERIES
-		}
-		else if(qNum == 3) {
-			//TODO: TONY'S QUERIES
-		}
-		else {
-			ran = false;
-		}
-		return ran;
-	}
-/*##########################################ADDING NEW DATA TO TABLES######################################*/
-	public static boolean addData(Statement stmt, String table) throws SQLException {
+	public static boolean performQueries(Statement stmt, int qNum, Connection conn){
 		
-		if(table == "dep") {
+		try {
+			switch(qNum) {
+			case 1:
+				String sql = "SELECT PName,"
+						+ " CASE WHEN DATEDIFF(end_date, NOW()) < 7 AND DATEDIFF(end_date, NOW()) > 0"
+						+ " THEN 'Ends in less than a week'"
+						+ " WHEN DATEDIFF(end_date, NOW()) < 0"
+						+ " THEN 'Already ended'"
+						+ " ELSE 'Ends in more than a week'"
+						+ " END AS Discount_status"
+						+ " FROM discount JOIN inventory USING(PID)";
+				stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql);
+				
+				while(rs.next()) {
+					String PName = rs.getString("PName");
+					String Discount_Status = rs.getString("Discount_Status");
+					System.out.println("Part Name: " + PName + "\n"
+							+ "Discount End Status: " + Discount_Status);
+				}
+				break;
+			case 2:
+	//			#2 Finding email provider for employees born before 1955
+				String sql2 = "SELECT substring_index(email, '@', -1) as email_provider"
+						+ " FROM members M JOIN employee E USING(EID)"
+						+ " WHERE EID IS NOT NULL AND M.DOB < '1955-01-01'";
+				ResultSet rs2 = stmt.executeQuery(sql2);
+				
+				while(rs2.next()) {
+					String email_provider = rs2.getString("email_provider");
+					System.out.println("Email Provider: " + email_provider + "\n");
+				}
+				
+				break;
+			case 3:
+	//			#3 The average salary per department
+				String sql3 = "SELECT DName, ROUND(AVG(E.Salary), 2) AS Avg_Salary"
+						+ " FROM employee E JOIN department D"
+						+ " ON D.DID = E.Department_DID"
+						+ " GROUP BY(D.DName)";
+				ResultSet rs3 = stmt.executeQuery(sql3);
+				
+				while(rs3.next()) {
+					String DName = rs3.getString("DName");
+					String Avg_Salary = rs3.getString("Avg_Salary");
+					System.out.println("Department Name: " + DName + "\n"
+							+ "Average Salary: " + Avg_Salary);
+				}
+				
+				break;
+			case 4:
+	//			#4 The average salary of employees depending on if they opt_in to the email
+				String sql4 = "SELECT Opt_in, ROUND(AVG(Salary), 2) AS Avg_Salary"
+						+ " FROM employee JOIN members USING(EID)"
+						+ " WHERE EID IS NOT NULL GROUP BY(Opt_in)";
+				ResultSet rs4 = stmt.executeQuery(sql4);
+				
+				while(rs4.next()) {
+					String Opt_in = rs4.getString("Opt_in");
+					String Avg_Salary = rs4.getString("Avg_Salary");
+					System.out.println("Average Salary: " + Avg_Salary + "\n"
+							+ "Opt_in: " + Opt_in);
+				}
+				
+				break;
+			case 5:
+	//			#5 Item information page
+				String sql5 = "SELECT I.PID, I.PName, I.QTY as current_inventory,"
+						+ " CONCAT((ROUND((D.Sale_price / D.Reg_price) * 100, 0)), '%') AS percent_off,"
+						+ " S.Qty_on_order, S.Qty_in_transit, S.arrival_date"
+						+ " FROM shipment_status S LEFT JOIN discount D USING(PID)"
+						+ " JOIN inventory I USING(PID)"
+						+ " ORDER BY I.PName";
+				ResultSet rs5 = stmt.executeQuery(sql5);
+				
+				while(rs5.next()) {
+					String PID = rs5.getString("I.PID");
+					String PName = rs5.getString("I.PName");
+					String Qty = rs5.getString("current_inventory");
+					String Percent_off = rs5.getString("percent_off");
+					String Qty_on_order = rs5.getString("S.Qty_on_order");
+					String Qty_in_transit = rs5.getString("S.Qty_in_transit");
+					String Arrival_date = rs5.getString("S.arrival_date");
+					System.out.println("Part ID: " + PID + "\n"
+							+ "Part Name: " + PName + "\n"
+							+ "Current Quantity: " + Qty + "\n"
+							+ "Percent Off: " + Percent_off + "\n"
+							+ "On Order: " + Qty_on_order + "\n"
+							+ "In Transit: " + Qty_in_transit + "\n"
+							+ "Arrival Date: " + Arrival_date);
+				}
+				break;
+			case 6:
+	//			#1)birthday calculator
+				String sql6 = "select concat(FName, ' ', LName) as member_name, MID as member_id,"
+						+ " DOB as members_birthday,"
+						+ " curdate() as current_date,"
+						+ " datediff(curdate(), DOB) as days_alive"
+						+ " from members where DOB < '2000-01-01'";
+				ResultSet rs6 = stmt.executeQuery(sql6);
+				
+				while(rs6.next()) {
+					String member_name = rs6.getString("member_name");
+					String member_id = rs6.getString("member_id");
+					String members_birthday = rs6.getString("members_birthday");
+					String days_alive = rs6.getString("days_alive");
+					System.out.println("Member Name: " + member_name + "\n"
+							+ "Member ID: " + member_id + "\n"
+							+ "Member Birthday: " + members_birthday + "\n"
+							+ "Days Alive: " + days_alive + "\n");
+				}
+				break;
+			case 7:
+	//			#2)item on sale for all customers
+				String sql7 = "select I.PName as product_name, concat('$',I.Price) as original_price,"
+						+ " concat('$',D.Sale_price) as discount_price,"
+						+ " concat(100 - round((D.Sale_price/I.Price)*100,0), '%') as percentage_off"
+						+ " from inventory I join discount D using(PID) where D.Is_Members_Only = 0";
+				ResultSet rs7 = stmt.executeQuery(sql7);
+				
+				while(rs7.next()) {
+					String product_name = rs7.getString("product_name");
+					String original_price = rs7.getString("original_price");
+					String discount_price = rs7.getString("discount_price");
+					String percentage_off = rs7.getString("percentage_off");
+					System.out.println("Product Name: " + product_name + "\n"
+							+ "Original Price: " + original_price + "\n"
+							+ "Discount Price: " + discount_price + "\n"
+							+ "Percentage Off: " + percentage_off);
+				}
+				break;
+			case 8:
+	//			#3)How many product is there for each department and who is the mangager for that department
+			String sql8 = "select D.DName as department_name, concat(E.FName, ' ' ,E.LName) as department_manager,"
+					+ " concat('$', sum(I.price)) as total_amount"
+					+ " from department D join employee E using(EID)"
+					+ " join inventory I using(DID) group by DID order by DID";
+			ResultSet rs8 = stmt.executeQuery(sql8);
 			
+			while(rs8.next()) {
+				String department_name = rs8.getString("department_name");
+				String department_manager = rs8.getString("department_manager");
+				String total_amount = rs8.getString("total_amount");
+				System.out.println("Department Name: " + department_name + "\n"
+						+ "Department Manager: " + department_manager + "\n"
+						+ "Total Amount: " + total_amount + "\n");
+			}
+				break;
+			case 9:
+	//			#4)Using Views, calculate the net amount of all product in store and item on order combined
+				String sql9 = "create or replace view net_product_summary"
+						+ " as select PName as product_name, concat('$',sum(price*(QTY + Qty_on_order))) as net_amount"
+						+ " from inventory join shipment_status using(PID) group by PID";
+				ResultSet rs9 = stmt.executeQuery(sql9);
+				
+				while(rs9.next()) {
+					String PartName = rs9.getString("PName");
+					String Net_amount = rs9.getString("net_amount");
+					System.out.println("Part Name: " + PartName + "\n"
+							+ "Net Amount: " + Net_amount + "\n");
+				}
+				break;
+			default:
+				System.out.println("Something went wrong");
+			}
+			return false;
 		}
-		else if(table=="dis") {
-			
+		catch(SQLException e) {
+			return true;
 		}
-		else if(table=="emp") {
-			
-		}
-		else if(table=="inv") {
-			
-		}
-		else if(table=="mem") {
-			
-		}
-		else if(table=="shp") {
-			
-		}
-		return false;
 	}
-	
 /*#######################################MAIN METHOD########################################################*/
 	public static void main(String[] args) {
     	Scanner k = new Scanner(System.in);
@@ -227,19 +362,16 @@ public class Main {
 				System.out.println("What would you like to do?");
 				System.out.println("==========================");
 				System.out.println("1. Perform queries");
-				System.out.println("2. add data");
-				System.out.println("3. Exit");
+				System.out.println("2. Exit");
 				int choice = k.nextInt();
 				if(choice==1) {
 					boolean error = false;
 					boolean finished = false;
 					do {
 						System.out.println("Which query would you like to run?");
-						System.out.println("1. Dan Acosta's queries");
-						System.out.println("2. Zach Belles's queries");
-						System.out.println("3. Tony Le's queries");
+						System.out.println("Please enter a number between 1 and 9 or 10 to do them all at once");
 						int queryNum = k.nextInt();
-						error = performQueries(stmt, queryNum);
+						error = performQueries(stmt, queryNum, conn);
 						if(error) {
 							System.out.println("Something went wrong, please try again");
 						}
@@ -252,48 +384,12 @@ public class Main {
 						}
 					} while(error || !finished);
 				}
-				else if(choice == 2) {
-					boolean finished = false;
-					boolean error = false;
-					do {
-						System.out.println("Which table would you like to add data to?");
-						System.out.println("=========================================");
-						System.out.println("1. Departments");
-						System.out.println("2. Discouts");
-						System.out.println("3. Employee");
-						System.out.println("4. Inventory");
-						System.out.println("5. Members");
-						System.out.println("6. Shipment Status");
-						System.out.println("7. Exit");
-						int qNum = k.nextInt();
-						switch(qNum) {
-						case 1:
-							error = addData(stmt, "Dep");
-							break;
-						case 2:
-							error = addData(stmt, "Dis");
-							break;
-						case 3:
-							error = addData(stmt, "Emp");
-							break;
-						case 4:
-							error = addData(stmt, "Inv");
-							break;
-						case 5:
-							error = addData(stmt, "Mem");
-							break;
-						case 6:
-							error = addData(stmt, "Shp");
-							break;
-						case 7:
-							finished = true;
-						default:
-							System.out.println("invalid choice");
-						}
-					}while(error || !finished);
+				else {
+					System.exit(0);
 				}
 			}
 			catch(Exception e) {
+				
 				System.out.println("Error: " + e);
 			}
     	}

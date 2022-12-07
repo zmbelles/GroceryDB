@@ -22,4 +22,6 @@ Assumption 5: User has set a localhost password on mysql to '!Fall2022' (to be f
 ### 5. How to Run  
 1. Download this repository  
 2. Create a new localhost with a password of !Fall2022 on MySQL Workbench  
-3. run login.java using 'Admin' as username and 'Admin' as password
+3. Download MySQL Connector/J from https://dev.mysql.com/downloads/connector/j/
+4. Add Connector/J to the projects build path, replacing what is currently there
+4. run login.java using 'Admin' as username and 'Admin' as password

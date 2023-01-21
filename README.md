@@ -7,7 +7,7 @@ Assumption 1: This database assumes that the database will be tracked by corpora
 Assumption 2: No employee will ever be paid more than $999,999.99/year  
 Assumption 3: administrator will always type the correct query  
 Assumption 4: User is running MySQL with a schema named 'term' created  
-Assumption 5: User has set a localhost password on mysql to '!Fall2022' (to be fixed)  
+Assumption 5: User has set a localhost password on mysql to '!Fall2022' 
 ### 3. Limitations 
 1. further abstraction to apply in multiple database contexts  
 2. the ability for administrators to make their own queries  
